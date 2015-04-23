@@ -94,27 +94,46 @@ group by a.type;
 -- * der lokalen Datensätze (Fragmente) (einschließlich Kommentar)  
 --
 
--- Fragment xxx für den Standort XXX
---
+-- TODO check article wildcard
+-- Bonn
+-- customer
+select * from customer where state = 'Germany' or state = 'Netherlands';
+-- depot
+select * from depot where state = 'Germany';
+-- rent
+select r.* from rent r inner join customer c on r.ID_customer = c.ID_customer where c.state = 'Germany' or c.state = 'Netherlands';
+-- supplier
+select * from supplier;
+-- article (resupply)
+select a.ID_article, a.ID_supplier, a.pur_* from article a;
+-- article (depotverwaltung)
+select a.ID_article, a.ID_depot, a.dep_* from article a inner join depot d on a.ID_depot = d.ID_depot where d.state = 'Germany';
+-- article (vermietung)
+select a.ID_article, a.item, a.type, a.sal_* from article a inner join depot d on a.ID_depot = d.ID_depot where d.state = 'Germany';
 
-SELECT ... 
-FROM ... 
-WHERE
-;
--- Fragment yyy für den Standort YYY
---
+-- London
+-- customer
+select * from customer where state = 'United Kingdom';
+-- depot
+select * from depot where state = 'United Kingdom';
+-- rent
+select r.* from rent r inner join customer c on r.ID_customer = c.ID_customer where c.state = 'United Kingdom';
+-- article (depotverwaltung)
+select a.ID_article, a.ID_depot, a.dep_* from article a inner join depot d on a.ID_depot = d.ID_depot where d.state = 'United Kingdom';
+-- article (vermietung)
+select a.ID_article, a.item, a.type, a.sal_* from article a inner join depot d on a.ID_depot = d.ID_depot where d.state = 'United Kingdom';
 
-SELECT ... 
-FROM ... 
-WHERE
-;
--- Fragment zzz für den Standort ZZZ
---
-
-SELECT ... 
-FROM ... 
-WHERE
-;
+-- NY
+-- customer
+select * from customer where state = 'United States' or state = 'Canada';
+-- depot
+select * from depot where state = 'USA';
+-- rent
+select r.* from rent r inner join customer c on r.ID_customer = c.ID_customer where c.state = 'United States' or c.state = 'Canada';
+-- article (depotverwaltung)
+select a.ID_article, a.ID_depot, a.dep_* from article a inner join depot d on a.ID_depot = d.ID_depot where d.state = 'USA';
+-- article (vermietung)
+select a.ID_article, a.item, a.type, a.sal_* from article a inner join depot d on a.ID_depot = d.ID_depot where d.state = 'USA';
 
 --
 -- Systemdatum Ende
