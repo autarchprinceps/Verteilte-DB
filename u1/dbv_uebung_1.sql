@@ -1,41 +1,18 @@
--- ***************************************************************
--- * File Name:                  dbv_uebung_1.sql                *
--- * File Creator:               Knolle                          *
--- * CreationDate:               12. April 2015                  *
--- *                                                             *
--- * <ChangeLogDate>             <ChangeLogText>                 *
--- ***************************************************************
---
--- ***************************************************************
--- * Verteilte Datenbanksysteme SS 2015
--- * ‹bung 1 
--- * Analysephase - Fragmentierung
---
--- ***************************************************************
--- * SQL*plus Job Control Section
---
-set 	echo 		on
-set 	linesize 	256
-set 	pagesize 	50
-set     escape      \
+SET 	echo on
+SET 	linesize 	256
+SET 	pagesize 	50
+SET   escape      \
 spool   ./dbv_uebung_1.log
 
---
--- Systemdatum Start
---
-  SELECT user,
-         TO_CHAR(SYSDATE, 'dd-mm-yy hh24:mi:ss') 
-  FROM   dual
-  ;  
+SELECT user, TO_CHAR(SYSDATE, 'dd-mm-yy hh24:mi:ss') 
+FROM   dual;  
+
 --
 -- ***************************************************************
 -- * SQL-Befehle der 10 hypothetischen Datenbankafragen 
--- * (einschlieﬂlich Kommentar)  
+-- * (einschlie√ülich Kommentar)  
 --
 
--- Ziel des Befehls
---
--- TODO replace current*
 -- 1.  new customer
 insert into customer(..) values(..);
 
@@ -46,101 +23,111 @@ insert into article(..) values(..);
 -- if(article noch nicht ausgeliehen) // wie?
 insert into rent(..) values(..);
 
--- 4.  gibt es eine ausleihe, die bald (in unter einer woche) abl‰uft
--- works
-select a.ID_article, a.item, r.rentTo
-from rent r, article a
-where r.ID_customer = currentcust and r.ID_article = a.ID_article and r.returnflag = 0 and r.rentTo > sysdate and r.RENTTO < sysdate + 7;
+-- 4.  gibt es eine ausleihe, die bald (in unter einer woche) abl√§uft
+SELECT ID_article, item, rentTo
+FROM rent NATURAL JOIN article
+WHERE ID_customer = 0
+AND returnflag = 0
+AND rentTo > sysdate
+AND RENTTO < sysdate + 7;
 
 -- 5.  customer zieht um
-update customer set street=..,city=.. where ID_customer = currentcust;
+UPDATE customer
+SET street='Stra√üe 1', city='Koblenz'
+WHERE ID_customer = 0;
 
--- 6.  customer gibt article zur¸ck
-update rent set returnflag=1 where ID_customer = currentcust and ID_article = currentarticle and contract = currentcontract;
+-- 6.  customer gibt article zurÔøΩck
+UPDATE rent
+SET returnflag=1
+WHERE ID_customer = currentcust
+AND ID_article = currentarticle
+AND contract = currentcontract;
 
--- 7.  aktueller zustand depot (wie viele noch nicht verliehen)
--- works
-select b.TYPE, count(b.ID_ARTICLE) - (
-  select count(r.ID_ARTICLE)
-  from article a, rent r
-  where a.TYPE = b.TYPE and a.ID_ARTICLE = r.ID_ARTICLE and r.RENTFROM < sysdate and r.RETURNFLAG = 0
-) remaining
-from article b
-group by b.TYPE;
+-- 7.  aktueller zustAND depot (wie viele noch nicht verliehen)
+SELECT a.TYPE, count(a.ID_ARTICLE) - (
+  SELECT count(ID_ARTICLE)
+  FROM article NATURAL JOIN rent
+  WHERE RENTFROM < sysdate
+  AND RETURNFLAG = 0
+) REMAINING
+FROM article a
+GROUP BY a.TYPE;
 
--- 8.  ab wann erstes vom article wieder vorhanden
--- works
-select a.type, min(r.RENTTO)
-from article a, rent r
-where a.ID_article = r.ID_article and r.returnFlag = 0 and r.RENTFROM < sysdate and r.RENTTO > sysdate
-group by a.type;
+-- 8.  ab wann erstes vom article wieder vORhANDen
+SELECT TYPE, min(RENTTO) AVAILABLE_AT
+FROM article NATURAL JOIN rent
+WHERE returnFlag = 0
+AND RENTFROM < sysdate 
+AND RENTTO > sysdate
+GROUP BY TYPE;
 
--- 9.  abrechnung per customer
+-- 9.  Monatliche Abrechnung fuer Customer, Annahme: immer gleiche Waehrung
 -- TODO: price month, week, day unterschiedlich
-select count(r.ID_article) * a.sal_price
-from rent r, article a
-where r.ID_article = a.ID_article and extract(month from r.rentFrom) = extract(month from sysdate);
+SELECT ID_customer, extract(month FROM sysdate) MONTH, sum(sal_rentalPriceMonth) COST
+FROM rent NATURAL JOIN article
+WHERE extract(month FROM rentFROM) = extract(month FROM sysdate)
+--AND ID_customer = 1
+GROUP BY ID_customer;
 
--- 10. profit nach depot
+-- 10. Monatlicher Profit nach Depot, Annahme: immer gleiche Waehrung
 -- TODO: price month, week, day unterschiedlich
-select a.type, count(a.ID_article) * a.sal_price
-from article a, rent r
-where a.ID_article = r.ID_article and ID_depot = currentDepot
-group by a.type;
+SELECT type, sum(sal_rentalPriceMonth) PROFIT
+FROM article NATURAL JOIN rent
+--WHERE AND ID_depot = currentDepot
+GROUP BY type;
 
 --
 -- ***************************************************************
 -- * SQL-Befehle mit den Anfragen und Ergebnissen zur Selektion  
--- * der lokalen Datens‰tze (Fragmente) (einschlieﬂlich Kommentar)  
+-- * der lokalen Datens√§tze (Fragmente) (einschlie√ülich Kommentar)  
 --
 
 -- TODO check article wildcard
 -- Bonn
 -- customer
-select * from customer where state = 'Germany' or state = 'Netherlands';
+SELECT * FROM customer WHERE state = 'Germany' OR state = 'NetherlANDs';
 -- depot
-select * from depot where state = 'Germany';
+SELECT * FROM depot WHERE state = 'Germany';
 -- rent
-select r.* from rent r inner join customer c on r.ID_customer = c.ID_customer where c.state = 'Germany' or c.state = 'Netherlands';
+SELECT r.* FROM rent r inner join customer c on r.ID_customer = c.ID_customer WHERE c.state = 'Germany' OR c.state = 'NetherlANDs';
 -- supplier
-select * from supplier;
+SELECT * FROM supplier;
 -- article (resupply)
-select a.ID_article, a.ID_supplier, a.pur_* from article a;
+SELECT a.ID_article, a.ID_supplier, a.pur_* FROM article a;
 -- article (depotverwaltung)
-select a.ID_article, a.ID_depot, a.dep_* from article a inner join depot d on a.ID_depot = d.ID_depot where d.state = 'Germany';
+SELECT a.ID_article, a.ID_depot, a.dep_* FROM article a inner join depot d on a.ID_depot = d.ID_depot WHERE d.state = 'Germany';
 -- article (vermietung)
-select a.ID_article, a.item, a.type, a.sal_* from article a inner join depot d on a.ID_depot = d.ID_depot where d.state = 'Germany';
+SELECT a.ID_article, a.item, a.type, a.sal_* FROM article a inner join depot d on a.ID_depot = d.ID_depot WHERE d.state = 'Germany';
 
 -- London
 -- customer
-select * from customer where state = 'United Kingdom';
+SELECT * FROM customer WHERE state = 'United Kingdom';
 -- depot
-select * from depot where state = 'United Kingdom';
+SELECT * FROM depot WHERE state = 'United Kingdom';
 -- rent
-select r.* from rent r inner join customer c on r.ID_customer = c.ID_customer where c.state = 'United Kingdom';
+SELECT r.* FROM rent r inner join customer c on r.ID_customer = c.ID_customer WHERE c.state = 'United Kingdom';
 -- article (depotverwaltung)
-select a.ID_article, a.ID_depot, a.dep_* from article a inner join depot d on a.ID_depot = d.ID_depot where d.state = 'United Kingdom';
+SELECT a.ID_article, a.ID_depot, a.dep_* FROM article a inner join depot d on a.ID_depot = d.ID_depot WHERE d.state = 'United Kingdom';
 -- article (vermietung)
-select a.ID_article, a.item, a.type, a.sal_* from article a inner join depot d on a.ID_depot = d.ID_depot where d.state = 'United Kingdom';
+SELECT a.ID_article, a.item, a.type, a.sal_* FROM article a inner join depot d on a.ID_depot = d.ID_depot WHERE d.state = 'United Kingdom';
 
 -- NY
 -- customer
-select * from customer where state = 'United States' or state = 'Canada';
+SELECT * FROM customer WHERE state = 'United States' OR state = 'Canada';
 -- depot
-select * from depot where state = 'USA';
+SELECT * FROM depot WHERE state = 'USA';
 -- rent
-select r.* from rent r inner join customer c on r.ID_customer = c.ID_customer where c.state = 'United States' or c.state = 'Canada';
+SELECT r.* FROM rent r inner join customer c on r.ID_customer = c.ID_customer WHERE c.state = 'United States' OR c.state = 'Canada';
 -- article (depotverwaltung)
-select a.ID_article, a.ID_depot, a.dep_* from article a inner join depot d on a.ID_depot = d.ID_depot where d.state = 'USA';
+SELECT a.ID_article, a.ID_depot, a.dep_* FROM article a inner join depot d on a.ID_depot = d.ID_depot WHERE d.state = 'USA';
 -- article (vermietung)
-select a.ID_article, a.item, a.type, a.sal_* from article a inner join depot d on a.ID_depot = d.ID_depot where d.state = 'USA';
+SELECT a.ID_article, a.item, a.type, a.sal_* FROM article a inner join depot d on a.ID_depot = d.ID_depot WHERE d.state = 'USA';
 
 --
 -- Systemdatum Ende
 --
-  SELECT user,
-         TO_CHAR(SYSDATE, 'dd-mm-yy hh24:mi:ss') 
-  FROM   dual
-  ;  
+SELECT user, TO_CHAR(SYSDATE, 'dd-mm-yy hh24:mi:ss') 
+FROM   dual;  
+
 --
 spool off
