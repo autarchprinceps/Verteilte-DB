@@ -12,6 +12,7 @@ aufteilung von article:
 * item, type, sal_ für vermietung
 * depot, dep_ für depotverwaltung
 * supplier, pur_ für resupply
+
 ## a. 10 hypothetische Anfrage
 1.  new customer
 2.  new article / bestellung vom supplier entgegennehmen
@@ -23,5 +24,6 @@ aufteilung von article:
 8.  ab wann erstes vom article wieder vorhanden
 9.  abrechnung per customer
 10. umsatz nach depot
+
 ## b.
 Wir sind davon ausgegangen, dass ein Resupply/Einkauf zentral in Bonn bestimmt wird, daher ist die Tabelle Supplier und das Fragment article_resupply nur dort vorhanden. Ansonsten wird horizontal fragmentiert (mit der Möglichkeit, dass an jedem Standort Zeilen aus jeder Tabelle vorkommen).
