@@ -63,36 +63,55 @@ GROUP BY TYPE;
 
 -- 9.  Gesamtabrechnung fuer Customer
 SELECT 
-  ID_article, TYPE
+  ID_article, TYPE,
   DAYS, DAYS*SAL_RENTALPRICEDAY PRICE_FOR_DAYS,
   WEEKS, WEEKS*SAL_RENTALPRICEWEEK PRICE_FOR_WEEKS,
   MONTHS, MONTHS*SAL_RENTALPRICEMONTH PRICE_FOR_MONTHS,
   DAYS*SAL_RENTALPRICEDAY+WEEKS*SAL_RENTALPRICEWEEK+MONTHS*SAL_RENTALPRICEMONTH TOTAL
 FROM(
-  SELECT ID_article, 
-    SUM(rentTO - rentFROM) DAYS,
-    SUM(trunc((rentTO-rentFROM)/7)) WEEKS,
-    SUM(trunc((rentTO-rentFROM)/30)) MONTHS
+  SELECT ID_article, SUM(rentTO - rentFROM) DAYS
   FROM rent
+  WHERE (rentTO - rentFROM) < 7
+  -- AND ID_customer = 0
+  GROUP BY ID_article
+) NATURAL JOIN (
+  SELECT ID_article, SUM(trunc((rentTO - rentFROM)/7)) WEEKS
+  FROM rent
+  WHERE (rentTO - rentFROM) < 30
+  -- AND ID_customer = 0
+  GROUP BY ID_article
+) NATURAL JOIN (
+  SELECT ID_article, SUM(trunc((rentTO - rentFROM)/30)) MONTHS
+  FROM rent
+  WHERE (rentTO - rentFROM) >= 30
   -- AND ID_customer = 0
   GROUP BY ID_article
 ) NATURAL JOIN article;
 
--- 10. Monatliche Einnahmen nach Depot nach Artikel
+-- 10. Monatliche Einnahmen nach Depot, nach Artikel
 SELECT 
-  ID_article, TYPE
+  ID_article, TYPE,
   DAYS, DAYS*SAL_RENTALPRICEDAY PRICE_FOR_DAYS,
   WEEKS, WEEKS*SAL_RENTALPRICEWEEK PRICE_FOR_WEEKS,
   MONTHS, MONTHS*SAL_RENTALPRICEMONTH PRICE_FOR_MONTHS,
   DAYS*SAL_RENTALPRICEDAY+WEEKS*SAL_RENTALPRICEWEEK+MONTHS*SAL_RENTALPRICEMONTH TOTAL
 FROM(
-  SELECT ID_article, 
-    SUM(rentTO - rentFROM) DAYS,
-    SUM(trunc((rentTO-rentFROM)/7)) WEEKS,
-    SUM(trunc((rentTO-rentFROM)/30)) MONTHS
+  SELECT ID_article, SUM(sysdate - rentFROM) DAYS
   FROM rent
-  WHERE extract(month FROM rentFROM) = extract(month FROM sysdate)
-  -- AND depot ...
+  WHERE (rentTO - rentFROM) < 7
+  AND extract(month FROM rentFROM) = extract(month FROM sysdate)
+  GROUP BY ID_article
+) NATURAL JOIN (
+  SELECT ID_article, SUM(trunc((sysdate - rentFROM)/7)) WEEKS
+  FROM rent
+  WHERE (rentTO - rentFROM) < 30
+  AND extract(month FROM rentFROM) = extract(month FROM sysdate)
+  GROUP BY ID_article
+) NATURAL JOIN (
+  SELECT ID_article, SUM(trunc((sysdate - rentFROM)/30)) MONTHS
+  FROM rent
+  WHERE (rentTO - rentFROM) >= 30
+  AND extract(month FROM rentFROM) = extract(month FROM sysdate)
   GROUP BY ID_article
 ) NATURAL JOIN article;
 
