@@ -36,7 +36,7 @@ UPDATE customer
 SET street='Straße 1', city='Koblenz'
 WHERE ID_customer = 0;
 
--- 6.  customer gibt article zur�ck
+-- 6.  customer gibt article zurueck
 UPDATE rent
 SET returnflag=1
 WHERE ID_customer = currentcust
@@ -44,14 +44,14 @@ AND ID_article = currentarticle
 AND contract = currentcontract;
 
 -- 7.  aktueller zustAND depot (wie viele noch nicht verliehen)
-SELECT a.TYPE, count(a.ID_ARTICLE) - (
+SELECT TYPE, count(ID_ARTICLE) - (
   SELECT count(ID_ARTICLE)
   FROM article NATURAL JOIN rent
   WHERE RENTFROM < sysdate
   AND RETURNFLAG = 0
 ) REMAINING
-FROM article a
-GROUP BY a.TYPE;
+FROM article
+GROUP BY TYPE;
 
 -- 8.  ab wann erstes vom article wieder vORhANDen
 SELECT TYPE, min(RENTTO) AVAILABLE_AT
@@ -61,20 +61,40 @@ AND RENTFROM < sysdate
 AND RENTTO > sysdate
 GROUP BY TYPE;
 
--- 9.  Monatliche Abrechnung fuer Customer, Annahme: immer gleiche Waehrung
--- TODO: price month, week, day unterschiedlich
-SELECT ID_customer, extract(month FROM sysdate) MONTH, sum(sal_rentalPriceMonth) COST
-FROM rent NATURAL JOIN article
-WHERE extract(month FROM rentFROM) = extract(month FROM sysdate)
---AND ID_customer = 1
-GROUP BY ID_customer;
+-- 9.  Gesamtabrechnung fuer Customer
+SELECT 
+  ID_article, TYPE
+  DAYS, DAYS*SAL_RENTALPRICEDAY PRICE_FOR_DAYS,
+  WEEKS, WEEKS*SAL_RENTALPRICEWEEK PRICE_FOR_WEEKS,
+  MONTHS, MONTHS*SAL_RENTALPRICEMONTH PRICE_FOR_MONTHS,
+  DAYS*SAL_RENTALPRICEDAY+WEEKS*SAL_RENTALPRICEWEEK+MONTHS*SAL_RENTALPRICEMONTH TOTAL
+FROM(
+  SELECT ID_article, 
+    SUM(rentTO - rentFROM) DAYS,
+    SUM(trunc((rentTO-rentFROM)/7)) WEEKS,
+    SUM(trunc((rentTO-rentFROM)/30)) MONTHS
+  FROM rent
+  -- AND ID_customer = 0
+  GROUP BY ID_article
+) NATURAL JOIN article;
 
--- 10. Monatlicher Profit nach Depot, Annahme: immer gleiche Waehrung
--- TODO: price month, week, day unterschiedlich
-SELECT type, sum(sal_rentalPriceMonth) PROFIT
-FROM article NATURAL JOIN rent
---WHERE AND ID_depot = currentDepot
-GROUP BY type;
+-- 10. Monatliche Einnahmen nach Depot nach Artikel
+SELECT 
+  ID_article, TYPE
+  DAYS, DAYS*SAL_RENTALPRICEDAY PRICE_FOR_DAYS,
+  WEEKS, WEEKS*SAL_RENTALPRICEWEEK PRICE_FOR_WEEKS,
+  MONTHS, MONTHS*SAL_RENTALPRICEMONTH PRICE_FOR_MONTHS,
+  DAYS*SAL_RENTALPRICEDAY+WEEKS*SAL_RENTALPRICEWEEK+MONTHS*SAL_RENTALPRICEMONTH TOTAL
+FROM(
+  SELECT ID_article, 
+    SUM(rentTO - rentFROM) DAYS,
+    SUM(trunc((rentTO-rentFROM)/7)) WEEKS,
+    SUM(trunc((rentTO-rentFROM)/30)) MONTHS
+  FROM rent
+  WHERE extract(month FROM rentFROM) = extract(month FROM sysdate)
+  -- AND depot ...
+  GROUP BY ID_article
+) NATURAL JOIN article;
 
 --
 -- ***************************************************************
