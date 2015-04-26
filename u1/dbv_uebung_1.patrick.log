@@ -1,0 +1,378 @@
+> SELECT user, TO_CHAR(SYSDATE, 'dd-mm-yy hh24:mi:ss') 
+FROM   dual
+USER                           TO_CHAR(SYSDATE,'DD-MM-YYHH24:MI:SS')
+------------------------------ -------------------------------------
+PROBIN2S                       26-04-15 16:54:14                    
+
+> --
+> -- ***************************************************************
+> -- * SQL-Befehle der 10 hypothetischen Datenbankafragen 
+> -- * (einschlie�lich Kommentar)  
+> --
+> -- 1.  new customer
+> -- works
+> insert into customer(id_customer, company, address, zip, city, state) values((select max(id_customer) from customer)+1, 'Hollow Sword Blade Company', 'Square 1', 'EC1A1AH', 'City of London', 'United Kingdom')
+1 Zeilen eingefügt.
+> -- 2.  new article / bestellung vom supplier entgegennehmen
+> -- works
+> insert into article(id_article, item, type, id_supplier,
+	pur_baseprice, pur_currency, pur_purchasedate,
+	sal_rentalpricemonth, sal_rentalpriceweek, sal_rentalpriceday, sal_currency,
+	id_depot, dep_location, dep_weightkg, dep_heightcm, dep_lengthcm, dep_breadthcm)
+values((select max(id_article) from article)+1,'Nova','Wrecking Ball',
+1,1,'Euro',sysdate,30,7,1,'Pound',2,10,1,1,1,1)
+1 Zeilen eingefügt.
+> -- 3.  customer rents article
+> -- works
+> insert into rent(id_customer, id_article, contract, rentfrom, rentto, returnflag) values(1,7,(select max(contract) from rent) + 1,sysdate,sysdate + interval '1' day,0)
+1 Zeilen eingefügt.
+> -- 4.  gibt es eine ausleihe, die bald (in unter einer woche) abl�uft
+> SELECT ID_article, item, rentTo
+FROM rent NATURAL JOIN article
+WHERE ID_customer = 0
+AND returnflag = 0
+AND rentTo > sysdate
+AND RENTTO < sysdate + 7
+Keine Zeilen gewählt
+
+
+> -- 5.  customer zieht um
+> -- works
+> UPDATE customer
+SET address='Platz 1', city='Koblenz', zip=12345
+WHERE ID_customer = 1
+1 Zeilen aktualisiert.
+> -- 6.  customer gibt article zur�ck
+> -- works
+> UPDATE rent
+SET returnflag=1
+WHERE ID_customer = 1
+AND ID_article = 7
+AND contract = 1
+1 Zeilen aktualisiert.
+> -- 7.  aktueller zustand depot (wie viele noch nicht verliehen)
+> -- works
+> SELECT TYPE, count(ID_ARTICLE) - (
+  SELECT count(ID_ARTICLE)
+  FROM article NATURAL JOIN rent
+  WHERE RENTFROM < sysdate
+  AND RETURNFLAG = 0
+) REMAINING
+FROM article
+GROUP BY TYPE
+TYPE                                                              REMAINING
+---------------------------------------------------------------- ----------
+Compressor                                                                2
+Excavator                                                                 2
+Wrecking Ball                                                             1
+Fork Lift                                                                 2
+Vibratory Roller                                                          2
+
+> -- 8.  ab wann erstes vom article wieder vorhanden
+> SELECT TYPE, min(RENTTO) AVAILABLE_AT
+FROM article NATURAL JOIN rent
+WHERE returnFlag = 0
+AND RENTFROM < sysdate 
+AND RENTTO > sysdate
+GROUP BY TYPE
+Keine Zeilen gewählt
+
+
+> -- 9.  Gesamtabrechnung fuer Customer 1
+> SELECT 
+  ID_article, TYPE,
+  DAYS, DAYS*SAL_RENTALPRICEDAY PRICE_FOR_DAYS,
+  WEEKS, WEEKS*SAL_RENTALPRICEWEEK PRICE_FOR_WEEKS,
+  MONTHS, MONTHS*SAL_RENTALPRICEMONTH PRICE_FOR_MONTHS,
+  DAYS*SAL_RENTALPRICEDAY+WEEKS*SAL_RENTALPRICEWEEK+MONTHS*SAL_RENTALPRICEMONTH TOTAL
+FROM(
+  SELECT ID_article, SUM(rentTO - rentFROM) DAYS
+  FROM rent
+  WHERE (rentTO - rentFROM) < 7
+  AND ID_customer = 1
+  GROUP BY ID_article
+) NATURAL JOIN (
+  SELECT ID_article, SUM(trunc((rentTO - rentFROM)/7)) WEEKS
+  FROM rent
+  WHERE (rentTO - rentFROM) < 30
+  AND ID_customer = 1
+  GROUP BY ID_article
+) NATURAL JOIN (
+  SELECT ID_article, SUM(trunc((rentTO - rentFROM)/30)) MONTHS
+  FROM rent
+  WHERE (rentTO - rentFROM) >= 30
+  AND ID_customer = 1
+  GROUP BY ID_article
+) NATURAL JOIN article
+ID_ARTICLE TYPE                                                                   DAYS PRICE_FOR_DAYS      WEEKS PRICE_FOR_WEEKS     MONTHS PRICE_FOR_MONTHS      TOTAL
+---------- ---------------------------------------------------------------- ---------- -------------- ---------- --------------- ---------- ---------------- ----------
+         7 Excavator                                                                 7            595          0               0          1              874       1469
+
+> -- 10. Monatliche Einnahmen nach Depot, nach Artikel
+> SELECT 
+  ID_article, TYPE,
+  DAYS, DAYS*SAL_RENTALPRICEDAY PRICE_FOR_DAYS,
+  WEEKS, WEEKS*SAL_RENTALPRICEWEEK PRICE_FOR_WEEKS,
+  MONTHS, MONTHS*SAL_RENTALPRICEMONTH PRICE_FOR_MONTHS,
+  DAYS*SAL_RENTALPRICEDAY+WEEKS*SAL_RENTALPRICEWEEK+MONTHS*SAL_RENTALPRICEMONTH TOTAL
+FROM(
+  SELECT ID_article, SUM(sysdate - rentFROM) DAYS
+  FROM rent
+  WHERE (rentTO - rentFROM) < 7
+  AND extract(month FROM rentFROM) = extract(month FROM sysdate)
+  GROUP BY ID_article
+) NATURAL JOIN (
+  SELECT ID_article, SUM(trunc((sysdate - rentFROM)/7)) WEEKS
+  FROM rent
+  WHERE (rentTO - rentFROM) < 30
+  AND extract(month FROM rentFROM) = extract(month FROM sysdate)
+  GROUP BY ID_article
+) NATURAL JOIN (
+  SELECT ID_article, SUM(trunc((sysdate - rentFROM)/30)) MONTHS
+  FROM rent
+  WHERE (rentTO - rentFROM) >= 30
+  AND extract(month FROM rentFROM) = extract(month FROM sysdate)
+  GROUP BY ID_article
+) NATURAL JOIN article
+Keine Zeilen gewählt
+
+
+> --
+> -- ***************************************************************
+> -- * SQL-Befehle mit den Anfragen und Ergebnissen zur Selektion  
+> -- * der lokalen Datensätze (Fragmente) (einschlie�lich Kommentar)  
+> --
+> -- Bonn
+> -- customer
+> -- works
+> SELECT * FROM customer WHERE state = 'Germany' OR state = 'Netherlands'
+ID_CUSTOMER COMPANY                                                                                                                          ADDRESS                          ZIP              CITY                             STATE                         
+----------- -------------------------------------------------------------------------------------------------------------------------------- -------------------------------- ---------------- -------------------------------- --------------------------------
+          1 BB Hoch- und Tiefbau GmbH                                                                                                        Platz 1                          12345            Koblenz                          
+Germany                         
+          2 Canzler Bau GmbH                                                                                                                 Daasdorfer Straße 38             Weimar           99428                            
+Germany                         
+          3 Etzoldt Bau GmbH Hoch- und Tiefbau                                                                                               Mittelstraße 23                  Jena             07745                            
+Germany                         
+          4 Kkd Tiefbau Weimar GmbH                                                                                                          Dammstr. 2                       Apolda           99510                            
+Germany                         
+          5 TBI Holdings B.V.                                                                                                                Wilhelminaplein 37               Rotterdam        3072 DE                          
+Netherlands                     
+
+> -- depot
+> -- works
+> SELECT * FROM depot WHERE state = 'Germany'
+  ID_DEPOT COMPANY                          ADDRESS                          ZIP              CITY                             STATE                         
+---------- -------------------------------- -------------------------------- ---------------- -------------------------------- --------------------------------
+         1 Baumaschinen Verleih Bonn        Buddestraße 30                   Bonn             53111                            Germany                         
+
+> -- rent
+> -- works
+> SELECT r.* FROM rent r inner join customer c on r.ID_customer = c.ID_customer WHERE c.state = 'Germany' OR c.state = 'Netherlands'
+ID_CUSTOMER ID_ARTICLE   CONTRACT RENTFROM RENTTO   RETURNFLAG
+----------- ---------- ---------- -------- -------- ----------
+          1          7          3 26.04.15 27.04.15          0
+          1          7          2 20.07.15 19.08.15          0
+          1          7          1 10.05.15 16.05.15          1
+          2          8          1 11.03.15 10.04.15          1
+          2          8          2 22.05.15 28.05.15          0
+          3          7          1 27.12.15 31.12.15          0
+          3          8          1 17.06.15 21.06.15          0
+          4          7          1 18.05.15 24.05.15          0
+          4          8          1 10.01.16 09.02.16          0
+          5          7          2 05.02.16 10.02.16          0
+          5          7          1 10.06.15 12.06.15          0
+
+ 11 Zeilen gewählt
+
+> -- supplier
+> -- works
+> SELECT * FROM supplier
+ID_SUPPLIER COMPANY                                                                                                                          ADDRESS                          ZIP              CITY                             STATE                         
+----------- -------------------------------------------------------------------------------------------------------------------------------- -------------------------------- ---------------- -------------------------------- --------------------------------
+          1 Süddeutsche Baumaschinen Handels GmbH                                                                                            Heinkelstraße 8                  Neu-Ulm          89231                            
+Germany                         
+          2 Maschinenhandel & Vermietung                                                                                                     Weseler Straße 68                Alpen            46519                            
+Germany                         
+          3 ATLAS Mortag                                                                                                                     Auf dem Waidrasen 10             Bonn             53111                            
+Germany                         
+
+> -- article (resupply)
+> -- works
+> SELECT a.ID_article, a.ID_supplier, a.pur_baseprice, a.pur_currency, a.pur_purchasedate FROM article a
+ID_ARTICLE ID_SUPPLIER PUR_BASEPRICE PUR_CURRENCY     PUR_PURCHASEDATE
+---------- ----------- ------------- ---------------- ----------------
+         1           1         20000 Euro             23.10.10        
+         2           1         24000 Euro             12.04.10        
+         3           2         16000 Euro             01.03.10        
+         4           2         23000 Euro             20.08.10        
+         5           3         18000 Euro             18.04.10        
+         6           3          2000 Euro             07.05.10        
+         7           3         18000 Euro             07.06.10        
+         8           2         25000 Euro             10.09.10        
+         9           1             1 Euro             26.04.15        
+
+ 9 Zeilen gewählt
+
+> -- article (depotverwaltung)
+> -- works
+> SELECT a.ID_article, a.ID_depot, a.dep_location, a.dep_weightkg, a.dep_heightcm, a.dep_lengthcm, a.dep_breadthcm FROM article a inner join depot d on a.ID_depot = d.ID_depot WHERE d.state = 'Germany'
+ID_ARTICLE   ID_DEPOT DEP_LOCATION DEP_WEIGHTKG DEP_HEIGHTCM DEP_LENGTHCM DEP_BREADTHCM
+---------- ---------- ------------ ------------ ------------ ------------ -------------
+         8          1           12         3270          300          400           150
+         7          1           53         1600          250          300           100
+
+> -- article (vermietung)
+> -- works
+> SELECT a.ID_article, a.item, a.type, a.sal_rentalpricemonth, a.sal_rentalpriceweek, a.sal_rentalpriceday, a.sal_currency FROM article a inner join depot d on a.ID_depot = d.ID_depot WHERE d.state = 'Germany'
+ID_ARTICLE ITEM                                                                                                                             TYPE                                                             SAL_RENTALPRICEMONTH SAL_RENTALPRICEWEEK
+---------- -------------------------------------------------------------------------------------------------------------------------------- ---------------------------------------------------------------- -------------------- ------------------- 
+SAL_RENTALPRICEDAY SAL_CURRENCY  
+------------------ ----------------
+         8 Yanmar, ViO30                                                                                                                    Excavator                                                                        2500                 900 
+             190,4 Euro            
+         7 New-Holland                                                                                                                      Excavator                                                                         874                 340 
+                85 Euro            
+
+> -- London
+> -- customer
+> -- works
+> SELECT * FROM customer WHERE state = 'United Kingdom'
+ID_CUSTOMER COMPANY                                                                                                                          ADDRESS                          ZIP              CITY                             STATE                         
+----------- -------------------------------------------------------------------------------------------------------------------------------- -------------------------------- ---------------- -------------------------------- --------------------------------
+          6 Brunelli Engineering Ltd                                                                                                         10 Abbey Orchard Street          London           SW1P 2JP                         
+United Kingdom                  
+          7 Skelton Group Cooting                                                                                                            Road Canterbury                  Kent             CT3 3EP                          
+United Kingdom                  
+          8 Renshaw Civil & Safety Engineering                                                                                               Saltwood                         Hythe            CT21 4WN                         
+United Kingdom                  
+          9 Meeres Civil Engineering                                                                                                         309 Ballards Lane                London           N12 8LY                          
+United Kingdom                  
+         15 Hollow Sword Blade Company                                                                                                       Square 1                         EC1A1AH          City of London                   
+United Kingdom                  
+
+> -- depot
+> -- works
+> SELECT * FROM depot WHERE state = 'United Kingdom'
+  ID_DEPOT COMPANY                          ADDRESS                          ZIP              CITY                             STATE                         
+---------- -------------------------------- -------------------------------- ---------------- -------------------------------- --------------------------------
+         2 The Hireman values (London) Ltd. 53 Tanner Street                 London           SE1 3PL                          United Kingdom                  
+
+> -- rent
+> -- works
+> SELECT r.* FROM rent r inner join customer c on r.ID_customer = c.ID_customer WHERE c.state = 'United Kingdom'
+ID_CUSTOMER ID_ARTICLE   CONTRACT RENTFROM RENTTO   RETURNFLAG
+----------- ---------- ---------- -------- -------- ----------
+          6          5          1 10.03.15 15.03.15          1
+          6          5          2 15.04.15 20.04.15          1
+          7          6          1 08.06.15 08.10.15          0
+          7          6          2 20.09.15 19.10.15          0
+          8          6          1 05.01.16 04.02.16          0
+          8          5          1 18.09.15 24.09.15          0
+          9          6          1 11.11.15 17.11.15          0
+          9          5          1 10.02.16 15.02.16          1
+
+ 8 Zeilen gewählt
+
+> -- article (depotverwaltung)
+> -- works
+> SELECT a.ID_article, a.ID_depot, a.dep_location, a.dep_weightkg, a.dep_heightcm, a.dep_lengthcm, a.dep_breadthcm FROM article a inner join depot d on a.ID_depot = d.ID_depot WHERE d.state = 'United Kingdom'
+ID_ARTICLE   ID_DEPOT DEP_LOCATION DEP_WEIGHTKG DEP_HEIGHTCM DEP_LENGTHCM DEP_BREADTHCM
+---------- ---------- ------------ ------------ ------------ ------------ -------------
+         6          2            2          700          150          200           110
+         9          2           10            1            1            1             1
+         5          2           12          500          120          200           100
+
+> -- article (vermietung)
+> -- works
+> SELECT a.ID_article, a.item, a.type, a.sal_rentalpricemonth, a.sal_rentalpriceweek, a.sal_rentalpriceday, a.sal_currency FROM article a inner join depot d on a.ID_depot = d.ID_depot WHERE d.state = 'United Kingdom'
+ID_ARTICLE ITEM                                                                                                                             TYPE                                                             SAL_RENTALPRICEMONTH SAL_RENTALPRICEWEEK
+---------- -------------------------------------------------------------------------------------------------------------------------------- ---------------------------------------------------------------- -------------------- ------------------- 
+SAL_RENTALPRICEDAY SAL_CURRENCY  
+------------------ ----------------
+         6 Two Tool Portable Compressor, 150cfm - Diesel                                                                                    Compressor                                                                        498                 166 
+                34 Pound           
+         9 Nova                                                                                                                             Wrecking Ball                                                                      30                   7 
+                 1 Pound           
+         5 Single Tool Portable Compressor, 85cfm - Diesel                                                                                  Compressor                                                                        450                 150 
+                30 Pound           
+
+> -- NY
+> -- customer
+> -- works
+> SELECT * FROM customer WHERE state = 'United States' OR state = 'Canada'
+ID_CUSTOMER COMPANY                                                                                                                          ADDRESS                          ZIP              CITY                             STATE                         
+----------- -------------------------------------------------------------------------------------------------------------------------------- -------------------------------- ---------------- -------------------------------- --------------------------------
+         10 Parsons Brinckerhoff                                                                                                             One Penn Plaza                   New York         NY 10119                         
+United States                   
+         11 Gannett Fleming                                                                                                                  380 Seventh Avenue               New York         NY 10121-0101                    
+United States                   
+         12 Rhode Island Engineering                                                                                                         397 Mourning Dove Drive          Saunderstown     RI                               
+United States                   
+         13 American Engineering Co                                                                                                          400 South County Trail           Exeter           RI                               
+United States                   
+         14 EP and CC Consulting Inc                                                                                                         24 Rosevear Avenue               Toronto          ON M4C 1Z3                       
+Canada                          
+
+> -- depot
+> -- works
+> SELECT * FROM depot WHERE state = 'USA'
+  ID_DEPOT COMPANY                          ADDRESS                          ZIP              CITY                             STATE                         
+---------- -------------------------------- -------------------------------- ---------------- -------------------------------- --------------------------------
+         3 ABLE Equipment Rental            21 Dixon Avenue                  Copiague         NY 11726                         USA                             
+
+> -- rent
+> -- works
+> SELECT r.* FROM rent r inner join customer c on r.ID_customer = c.ID_customer WHERE c.state = 'United States' OR c.state = 'Canada'
+ID_CUSTOMER ID_ARTICLE   CONTRACT RENTFROM RENTTO   RETURNFLAG
+----------- ---------- ---------- -------- -------- ----------
+         10          1          1 10.03.15 09.04.15          1
+         10          2          1 10.02.15 15.02.15          1
+         11          3          1 11.07.15 18.07.15          0
+         11          4          1 22.06.15 28.06.15          0
+         12          2          1 22.03.15 28.03.15          1
+         12          1          1 06.05.15 12.05.15          0
+         13          4          1 15.12.15 21.12.15          0
+         13          3          1 03.01.16 10.01.16          0
+         14          1          1 02.01.16 03.02.16          0
+         14          2          1 17.09.15 24.09.15          0
+
+ 10 Zeilen gewählt
+
+> -- article (depotverwaltung)
+> -- works
+> SELECT a.ID_article, a.ID_depot, a.dep_location, a.dep_weightkg, a.dep_heightcm, a.dep_lengthcm, a.dep_breadthcm FROM article a inner join depot d on a.ID_depot = d.ID_depot WHERE d.state = 'USA'
+ID_ARTICLE   ID_DEPOT DEP_LOCATION DEP_WEIGHTKG DEP_HEIGHTCM DEP_LENGTHCM DEP_BREADTHCM
+---------- ---------- ------------ ------------ ------------ ------------ -------------
+         3          3           12         1800          250          250           150
+         4          3           13         1900          280          250           150
+         1          3           38         2721          120          150           200
+         2          3           64         3000          180          200           250
+
+> -- article (vermietung)
+> -- works
+> SELECT a.ID_article, a.item, a.type, a.sal_rentalpricemonth, a.sal_rentalpriceweek, a.sal_rentalpriceday, a.sal_currency FROM article a inner join depot d on a.ID_depot = d.ID_depot WHERE d.state = 'USA'
+ID_ARTICLE ITEM                                                                                                                             TYPE                                                             SAL_RENTALPRICEMONTH SAL_RENTALPRICEWEEK
+---------- -------------------------------------------------------------------------------------------------------------------------------- ---------------------------------------------------------------- -------------------- ------------------- 
+SAL_RENTALPRICEDAY SAL_CURRENCY  
+------------------ ----------------
+         3 Industrial - 5000 lbs Cushion Triple Mast                                                                                        Fork Lift                                                                        1300                 495 
+               165 Dollar          
+         4 Industrial - 8,000 lbs Cushion Triple Mast                                                                                       Fork Lift                                                                        2430                 810 
+               270 Dollar          
+         1 Bomag Vibratory Roller - Ride-On - Smooth/Padfoot 48" Drum Width, BW124-3, 6,000 lbs                                             Vibratory Roller                                                                 1004                 251 
+               104 Dollar          
+         2 Bomag Vibratory Roller - Ride-On - Smooth/Padfoot Asphalt Roller - 3 Ton Vibratory Bomag BW120                                   Vibratory Roller                                                                 1200                 300 
+               150 Dollar          
+
+> --
+> -- Systemdatum Ende
+> --
+> SELECT user, TO_CHAR(SYSDATE, 'dd-mm-yy hh24:mi:ss') 
+FROM   dual
+USER                           TO_CHAR(SYSDATE,'DD-MM-YYHH24:MI:SS')
+------------------------------ -------------------------------------
+PROBIN2S                       26-04-15 16:54:15                    
+
+> --
+> spool off
