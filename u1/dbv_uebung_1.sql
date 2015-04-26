@@ -10,20 +10,27 @@ FROM   dual;
 --
 -- ***************************************************************
 -- * SQL-Befehle der 10 hypothetischen Datenbankafragen 
--- * (einschlie√ülich Kommentar)  
+-- * (einschlieﬂlich Kommentar)  
 --
 
 -- 1.  new customer
-insert into customer(..) values(..);
+-- works
+insert into customer(id_customer, company, address, zip, city, state) values((select max(id_customer) from customer)+1, 'Hollow Sword Blade Company', 'Square 1', 'EC1A1AH', 'City of London', 'United Kingdom');
 
 -- 2.  new article / bestellung vom supplier entgegennehmen
-insert into article(..) values(..);
+-- works
+insert into article(id_article, item, type, id_supplier,
+	pur_baseprice, pur_currency, pur_purchasedate,
+	sal_rentalpricemonth, sal_rentalpriceweek, sal_rentalpriceday, sal_currency,
+	id_depot, dep_location, dep_weightkg, dep_heightcm, dep_lengthcm, dep_breadthcm)
+values((select max(id_article) from article)+1,'Nova','Wrecking Ball',
+1,1,'Euro',sysdate,30,7,1,'Pound',2,10,1,1,1,1);
 
 -- 3.  customer rents article
--- if(article noch nicht ausgeliehen) // wie?
-insert into rent(..) values(..);
+-- works
+insert into rent(id_customer, id_article, contract, rentfrom, rentto, returnflag) values(1,7,(select max(contract) from rent) + 1,sysdate,sysdate + interval '1' day,0);
 
--- 4.  gibt es eine ausleihe, die bald (in unter einer woche) abl√§uft
+-- 4.  gibt es eine ausleihe, die bald (in unter einer woche) abl‰uft
 SELECT ID_article, item, rentTo
 FROM rent NATURAL JOIN article
 WHERE ID_customer = 0
@@ -32,18 +39,21 @@ AND rentTo > sysdate
 AND RENTTO < sysdate + 7;
 
 -- 5.  customer zieht um
+-- works
 UPDATE customer
-SET street='Stra√üe 1', city='Koblenz'
-WHERE ID_customer = 0;
+SET address='Platz 1', city='Koblenz', zip=12345
+WHERE ID_customer = 1;
 
--- 6.  customer gibt article zurueck
+-- 6.  customer gibt article zur¸ck
+-- works
 UPDATE rent
 SET returnflag=1
-WHERE ID_customer = currentcust
-AND ID_article = currentarticle
-AND contract = currentcontract;
+WHERE ID_customer = 1
+AND ID_article = 7
+AND contract = 1;
 
--- 7.  aktueller zustAND depot (wie viele noch nicht verliehen)
+-- 7.  aktueller zustand depot (wie viele noch nicht verliehen)
+-- works
 SELECT TYPE, count(ID_ARTICLE) - (
   SELECT count(ID_ARTICLE)
   FROM article NATURAL JOIN rent
@@ -53,7 +63,7 @@ SELECT TYPE, count(ID_ARTICLE) - (
 FROM article
 GROUP BY TYPE;
 
--- 8.  ab wann erstes vom article wieder vORhANDen
+-- 8.  ab wann erstes vom article wieder vorhanden
 SELECT TYPE, min(RENTTO) AVAILABLE_AT
 FROM article NATURAL JOIN rent
 WHERE returnFlag = 0
@@ -61,7 +71,7 @@ AND RENTFROM < sysdate
 AND RENTTO > sysdate
 GROUP BY TYPE;
 
--- 9.  Gesamtabrechnung fuer Customer
+-- 9.  Gesamtabrechnung fuer Customer 1
 SELECT 
   ID_article, TYPE,
   DAYS, DAYS*SAL_RENTALPRICEDAY PRICE_FOR_DAYS,
@@ -72,19 +82,19 @@ FROM(
   SELECT ID_article, SUM(rentTO - rentFROM) DAYS
   FROM rent
   WHERE (rentTO - rentFROM) < 7
-  -- AND ID_customer = 0
+  AND ID_customer = 1
   GROUP BY ID_article
 ) NATURAL JOIN (
   SELECT ID_article, SUM(trunc((rentTO - rentFROM)/7)) WEEKS
   FROM rent
   WHERE (rentTO - rentFROM) < 30
-  -- AND ID_customer = 0
+  AND ID_customer = 1
   GROUP BY ID_article
 ) NATURAL JOIN (
   SELECT ID_article, SUM(trunc((rentTO - rentFROM)/30)) MONTHS
   FROM rent
   WHERE (rentTO - rentFROM) >= 30
-  -- AND ID_customer = 0
+  AND ID_customer = 1
   GROUP BY ID_article
 ) NATURAL JOIN article;
 
@@ -118,10 +128,9 @@ FROM(
 --
 -- ***************************************************************
 -- * SQL-Befehle mit den Anfragen und Ergebnissen zur Selektion  
--- * der lokalen Datens√§tze (Fragmente) (einschlie√ülich Kommentar)  
+-- * der lokalen Datens√§tze (Fragmente) (einschlieﬂlich Kommentar)  
 --
 
--- TODO fix article wildcard
 -- Bonn
 -- customer
 -- works
