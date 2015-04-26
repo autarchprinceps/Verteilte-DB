@@ -121,46 +121,63 @@ FROM(
 -- * der lokalen Datensätze (Fragmente) (einschließlich Kommentar)  
 --
 
--- TODO check article wildcard
+-- TODO fix article wildcard
 -- Bonn
 -- customer
-SELECT * FROM customer WHERE state = 'Germany' OR state = 'NetherlANDs';
+-- works
+SELECT * FROM customer WHERE state = 'Germany' OR state = 'Netherlands';
 -- depot
+-- works
 SELECT * FROM depot WHERE state = 'Germany';
 -- rent
-SELECT r.* FROM rent r inner join customer c on r.ID_customer = c.ID_customer WHERE c.state = 'Germany' OR c.state = 'NetherlANDs';
+-- works
+SELECT r.* FROM rent r inner join customer c on r.ID_customer = c.ID_customer WHERE c.state = 'Germany' OR c.state = 'Netherlands';
 -- supplier
+-- works
 SELECT * FROM supplier;
 -- article (resupply)
-SELECT a.ID_article, a.ID_supplier, a.pur_* FROM article a;
+-- works
+SELECT a.ID_article, a.ID_supplier, a.pur_baseprice, a.pur_currency, a.pur_purchasedate FROM article a;
 -- article (depotverwaltung)
-SELECT a.ID_article, a.ID_depot, a.dep_* FROM article a inner join depot d on a.ID_depot = d.ID_depot WHERE d.state = 'Germany';
+-- works
+SELECT a.ID_article, a.ID_depot, a.dep_location, a.dep_weightkg, a.dep_heightcm, a.dep_lengthcm, a.dep_breadthcm FROM article a inner join depot d on a.ID_depot = d.ID_depot WHERE d.state = 'Germany';
 -- article (vermietung)
-SELECT a.ID_article, a.item, a.type, a.sal_* FROM article a inner join depot d on a.ID_depot = d.ID_depot WHERE d.state = 'Germany';
+-- works
+SELECT a.ID_article, a.item, a.type, a.sal_rentalpricemonth, a.sal_rentalpriceweek, a.sal_rentalpriceday, a.sal_currency FROM article a inner join depot d on a.ID_depot = d.ID_depot WHERE d.state = 'Germany';
 
 -- London
 -- customer
+-- works
 SELECT * FROM customer WHERE state = 'United Kingdom';
 -- depot
+-- works
 SELECT * FROM depot WHERE state = 'United Kingdom';
 -- rent
+-- works
 SELECT r.* FROM rent r inner join customer c on r.ID_customer = c.ID_customer WHERE c.state = 'United Kingdom';
 -- article (depotverwaltung)
-SELECT a.ID_article, a.ID_depot, a.dep_* FROM article a inner join depot d on a.ID_depot = d.ID_depot WHERE d.state = 'United Kingdom';
+-- works
+SELECT a.ID_article, a.ID_depot, a.dep_location, a.dep_weightkg, a.dep_heightcm, a.dep_lengthcm, a.dep_breadthcm FROM article a inner join depot d on a.ID_depot = d.ID_depot WHERE d.state = 'United Kingdom';
 -- article (vermietung)
-SELECT a.ID_article, a.item, a.type, a.sal_* FROM article a inner join depot d on a.ID_depot = d.ID_depot WHERE d.state = 'United Kingdom';
+-- works
+SELECT a.ID_article, a.item, a.type, a.sal_rentalpricemonth, a.sal_rentalpriceweek, a.sal_rentalpriceday, a.sal_currency FROM article a inner join depot d on a.ID_depot = d.ID_depot WHERE d.state = 'United Kingdom';
 
 -- NY
 -- customer
+-- works
 SELECT * FROM customer WHERE state = 'United States' OR state = 'Canada';
 -- depot
+-- works
 SELECT * FROM depot WHERE state = 'USA';
 -- rent
+-- works
 SELECT r.* FROM rent r inner join customer c on r.ID_customer = c.ID_customer WHERE c.state = 'United States' OR c.state = 'Canada';
 -- article (depotverwaltung)
-SELECT a.ID_article, a.ID_depot, a.dep_* FROM article a inner join depot d on a.ID_depot = d.ID_depot WHERE d.state = 'USA';
+-- works
+SELECT a.ID_article, a.ID_depot, a.dep_location, a.dep_weightkg, a.dep_heightcm, a.dep_lengthcm, a.dep_breadthcm FROM article a inner join depot d on a.ID_depot = d.ID_depot WHERE d.state = 'USA';
 -- article (vermietung)
-SELECT a.ID_article, a.item, a.type, a.sal_* FROM article a inner join depot d on a.ID_depot = d.ID_depot WHERE d.state = 'USA';
+-- works
+SELECT a.ID_article, a.item, a.type, a.sal_rentalpricemonth, a.sal_rentalpriceweek, a.sal_rentalpriceday, a.sal_currency FROM article a inner join depot d on a.ID_depot = d.ID_depot WHERE d.state = 'USA';
 
 --
 -- Systemdatum Ende
