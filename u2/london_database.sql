@@ -28,6 +28,10 @@ spool   ./london_database.log
   FROM   dual
   ;  
 --
+drop table ldn_article purge;
+drop table ldn_customer purge;
+drop table ldn_rent purge;
+
 -- ***************************************************************
 -- * Das lokale Schema für den Standort London
 --

@@ -28,6 +28,10 @@ spool   ./newyork_database.log
   FROM   dual
   ;  
 --
+drop table nyk_article purge;
+drop table nyk_customer purge;
+drop table nyk_rent purge;
+
 -- ***************************************************************
 -- * Das lokale Schema für den Standort New York
 --

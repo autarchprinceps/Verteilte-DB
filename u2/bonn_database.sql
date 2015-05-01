@@ -28,7 +28,7 @@ spool   ./bonn_database.log
   FROM   dual
   ;  
 --
-drop table bnn_bnn_article purge;
+drop table bnn_article purge;
 drop table bnn_customer purge;
 drop table depot purge;
 drop table supplier purge;
