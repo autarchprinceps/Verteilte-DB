@@ -12,17 +12,27 @@
 
 # b.
 ## i. Welche Use-Cases funktionieren auch lokal?
-1. (leicht angepasst)
-2. (leicht angepasst)
-3. (leicht angepasst)
-4. (leicht angepasst)
-5. Wenn der Kunde dem gleichen Depot zugeordnet bleibt (in unserem Beispiel Umzug innerhalb Deutschlands)
-6. (leicht angepasst)
-9. (leicht angepasst)
+1 (leicht angepasst)
+
+2 (leicht angepasst)
+
+3 (leicht angepasst)
+
+4 (leicht angepasst)
+
+5 Wenn der Kunde dem gleichen Depot zugeordnet bleibt (in unserem Beispiel Umzug innerhalb Deutschlands)
+
+6 (leicht angepasst)
+
+9 (leicht angepasst)
+
 
 ## ii. Welche Use-Cases zeigen zu wenig Daten an?
-7. Nur, wenn es ausnahmsweise Ausleihen von Kunden gibt, die normalerweise in einem anderen Depot einkaufen.
-8. Siehe 7.
-10. Siehe 7.
+7 Nur, wenn es ausnahmsweise Ausleihen von Kunden gibt, die normalerweise in einem anderen Depot einkaufen.
+
+8 Siehe 7.
+
+10 Siehe 7.
+
 
 ## iii. Welche Use-Cases erzeugen Fehlermeldungen?
