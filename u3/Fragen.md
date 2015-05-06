@@ -2,17 +2,31 @@
 ## i.
 Je Standort:
 Je eine für jede horizontal fragmentierte Originaltabelle (d.h. bei uns 3)
-+ View/Synonym für nicht fragmentierte Tabellen, die nicht lokal existiert (bei uns: ¬bonn → supplier ^ depot)
+View/Synonym für nicht fragmentierte Tabellen, die nicht lokal existiert (bei uns: ¬bonn → supplier ^ depot)
 ## ii.
 Vorteile | Nachteile
 ---------|----------
 Lastverteilte Verwaltung | auch kleinere Änderungen am globalen Schema müssen an allen Standorten durchgeführt werden
+Kein SPoF | 
+
 # b)
 ## i.
+Vorteile | Nachteile
+---------|----------
+Änderungen des View müssen nur an einer Stelle gemacht werden|SPoF
+|Zum Zugriff auf View muss zentrale DB angesprochen werden, die dann unter Umständen eine lokale DB anspricht (doppelte Latenz)
 ## ii.
+?
 # c)
 ## a.
+repliziert | zentralisiert
+-----------|--------------
+schwer|einfach zu ändern
+verteilt|zentral/SPoF
+
 ## b.
+Variante 1: Katalogreplizierung, kein SPoF, keine doppelte Latenz, Änderungen an Views eher selten nötig
+
 # d)
 ## Use-Cases
 1.  new customer
@@ -27,27 +41,8 @@ Lastverteilte Verwaltung | auch kleinere Änderungen am globalen Schema müssen 
 10. umsatz nach depot
 
 ## i. Welche Use-Cases funktionieren auch lokal?
-1 (leicht angepasst)
-
-2 (leicht angepasst)
-
-3 (leicht angepasst)
-
-4 (leicht angepasst)
-
-5 Wenn der Kunde dem gleichen Depot zugeordnet bleibt (in unserem Beispiel Umzug innerhalb Deutschlands)
-
-6 (leicht angepasst)
-
-9 (leicht angepasst)
-
+4., 7., 8., 9., 10.
 
 ## ii. Welche Use-Cases zeigen zu wenig Daten an?
-7 Nur, wenn es ausnahmsweise Ausleihen von Kunden gibt, die normalerweise in einem anderen Depot einkaufen.
-
-8 Siehe 7.
-
-10 Siehe 7.
-
-
 ## iii. Welche Use-Cases erzeugen Fehlermeldungen?
+Insert, Update funktionieren nicht auf Views: 1., 2., 3., 5., 6.
