@@ -8,7 +8,7 @@
 --
 -- ***************************************************************
 -- * Verteilte Datenbanksysteme SS 2015
--- * Übung 4 
+-- * ï¿½bung 4 
 -- * Schluesselintegritaet
 --
 -- ***************************************************************
@@ -127,26 +127,31 @@ END IF;
 END;
 /
 
-
--- **VIEW ARTICLE -- Problem: abhängige Fragmentierung: wie referenziert man im If-Statement einen Wert aus der DEPOT Tabelle?
 CREATE OR REPLACE TRIGGER ARTICLE_GLO_TRI
 INSTEAD OF INSERT OR DELETE ON article
 FOR EACH ROW
+DECLARE
+  depot_state depot.STATE%TYPE;
 BEGIN
 IF INSERTING THEN
-IF :new.state = 'Germany' OR :new.state = 'Nethderlands' THEN --TODO: ersetzen durch Abfrage d. abhängigen Tabelle DEPOT
+ SELECT state
+ INTO depot_state
+ FROM depot 
+ WHERE depot.ID_DEPOT = :new.ID_DEPOT;
+dbms_output.Put_line(depot_state);
+IF depot_state = 'Germany' OR depot_state = 'Nethderlands' THEN
 INSERT INTO BNN_ARTICLE values (NULL,
 :new.ITEM, :new.TYPE, :new.ID_SUPPLIER, :new.PUR_BASEPRICE, :new.PUR_CURRENCY, 
 :new.PUR_PURCHASEDATE, :new.SAL_RENTALPRICEMONTH, :new.SAL_RENTALPRICEWEEK, 
 :new.SAL_RENTALPRICEDAY,:new.SAL_CURRENCY, :new.ID_DEPOT, :new.DEP_LOCATION, 
 :new.DEP_WEIGHTKG, :new.DEP_HEIGHTCM, :new.DEP_LENGTHCM, :new.DEP_BREADTHCM);
-ELSIF :new.state = 'United Kingdom' THEN
+ELSIF depot_state = 'United Kingdom' THEN
 INSERT INTO LDN_ARTICLE@london values (NULL,
 :new.ITEM, :new.TYPE, :new.ID_SUPPLIER, :new.PUR_BASEPRICE, :new.PUR_CURRENCY, 
 :new.PUR_PURCHASEDATE, :new.SAL_RENTALPRICEMONTH, :new.SAL_RENTALPRICEWEEK, 
 :new.SAL_RENTALPRICEDAY, :new.SAL_CURRENCY, :new.ID_DEPOT, :new.DEP_LOCATION, 
 :new.DEP_WEIGHTKG, :new.DEP_HEIGHTCM, :new.DEP_LENGTHCM, :new.DEP_BREADTHCM);
-ELSIF :new.state = 'USA' THEN
+ELSIF depot_state = 'USA' THEN
 INSERT INTO NYK_ARTICLE@newyork values (NULL,
 :new.ITEM, :new.TYPE, :new.ID_SUPPLIER, :new.PUR_BASEPRICE, :new.PUR_CURRENCY, 
 :new.PUR_PURCHASEDATE, :new.SAL_RENTALPRICEMONTH, :new.SAL_RENTALPRICEWEEK, 
@@ -155,15 +160,16 @@ INSERT INTO NYK_ARTICLE@newyork values (NULL,
 END IF;
 END IF;
 IF DELETING THEN
-IF :old.state = 'Germany' OR :old.state = 'Nethderlands' THEN --TODO: ersetzen durch Referenzierung auf DEPOT.state
-DELETE FROM BNN_ARTICLE WHERE ID_ARTICLE =
-:old.ID_ARTICLE;
-elsif :old.state = 'United Kingdom' THEN
-DELETE FROM LDN_ARTICLE@london WHERE ID_ARTICLE =
-:old.ID_ARTICLE;
-elsif :old.state = 'USA' THEN
-DELETE FROM NYK_ARTICLE@newyork WHERE ID_ARTICLE =
-:old.ID_ARTICLE;
+ SELECT state
+ INTO depot_state
+ FROM depot 
+ WHERE depot.ID_DEPOT = :old.ID_DEPOT;
+IF depot_state = 'Germany' OR depot_state = 'Nethderlands' THEN
+DELETE FROM BNN_ARTICLE WHERE ID_ARTICLE = :old.ID_ARTICLE;
+elsif depot_state = 'United Kingdom' THEN
+DELETE FROM LDN_ARTICLE@london WHERE ID_ARTICLE = :old.ID_ARTICLE;
+elsif depot_state = 'USA' THEN
+DELETE FROM NYK_ARTICLE@newyork WHERE ID_ARTICLE = :old.ID_ARTICLE;
 END IF;
 END IF;
 END;
