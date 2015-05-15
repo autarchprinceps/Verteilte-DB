@@ -105,10 +105,10 @@ IF :new.state = 'Germany' OR :new.state = 'Nethderlands' THEN
 INSERT INTO BNN_CUSTOMER values (NULL,
 :new.COMPANY, :new.ADDRESS, :new.ZIP, :new.CITY, :new.STATE);
 ELSIF :new.state = 'United Kingdom' THEN
-INSERT INTO LND_CUSTOMER values (NULL,
+INSERT INTO LND_CUSTOMER@london values (NULL,
 :new.COMPANY, :new.ADDRESS, :new.ZIP, :new.CITY, :new.STATE);
 ELSIF :new.state = 'USA' THEN
-INSERT INTO NYK_CUSTOMER values (NULL,
+INSERT INTO NYK_CUSTOMER@newyork values (NULL,
 :new.COMPANY, :new.ADDRESS, :new.ZIP, :new.CITY, :new.STATE);
 END IF;
 END IF;
@@ -117,10 +117,10 @@ IF :old.state = 'Germany' OR :old.state = 'Nethderlands' THEN
 DELETE FROM BNN_CUSTOMER WHERE ID_CUSTOMER =
 :old.ID_CUSTOMER;
 elsif :old.state = 'United Kingdom' THEN
-DELETE FROM LND_CUSTOMER WHERE ID_CUSTOMER =
+DELETE FROM LND_CUSTOMER@london WHERE ID_CUSTOMER =
 :old.ID_CUSTOMER;
 elsif :old.state = 'USA' THEN
-DELETE FROM NYK_CUSTOMER WHERE ID_CUSTOMER =
+DELETE FROM NYK_CUSTOMER@newyork WHERE ID_CUSTOMER =
 :old.ID_CUSTOMER;
 END IF;
 END IF;
