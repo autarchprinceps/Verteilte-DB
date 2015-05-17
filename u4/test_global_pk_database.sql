@@ -37,27 +37,19 @@ spool   ./test_global_pk_database.log
 -- * Globale Einfuegevorgaenge (pro lakaler Tabelle)  
 --
 
--- **TEST ARCTICLE TABLE INSERTS
---Insert into supplier values ( 1 , 'S�ddeutsche Baumaschinen Handels GmbH' , 'Heinkelstra�e 8' , 'Neu-Ulm' , '89231' , 'Germany' );
---Insert into BNN_ARTICLE values ( null , 'TEST5 Bomag Vibratory Roller - Ride-On - Smooth/Padfoot 48" Drum Width, BW124-3, 6,000 lbs' , 'Vibratory Roller' , 1 , 20000.00, 'Euro', to_date('2010-10-23', 'yyyy-mm-dd'), 1004.00, 251.00, 104.00, 'Dollar', NULL, 39, 2721.00, 120.00, 150.00, 200.00);
---Insert into BNN_ARTICLE values ( null , 'TEST2 Bomag Vibratory Roller - Ride-On - Smooth/Padfoot 48" Drum Width, BW124-3, 6,000 lbs' , 'Vibratory Roller' , 1 , 20000.00, 'Euro', to_date('2010-10-23', 'yyyy-mm-dd'), 1004.00, 251.00, 104.00, 'Dollar', NULL, 40, 2721.00, 120.00, 150.00, 200.00);
---Insert into BNN_ARTICLE values ( null , 'TEST3 Bomag Vibratory Roller - Ride-On - Smooth/Padfoot 48" Drum Width, BW124-3, 6,000 lbs' , 'Vibratory Roller' , 1 , 20000.00, 'Euro', to_date('2010-10-23', 'yyyy-mm-dd'), 1004.00, 251.00, 104.00, 'Dollar', NULL, 41, 2721.00, 120.00, 150.00, 200.00);
-Insert into ARTICLE values ( null , 'TEST4 Bomag Vibratory Roller - Ride-On - Smooth/Padfoot 48" Drum Width, BW124-3, 6,000 lbs' , 'Vibratory Roller' , 1 , 20000.00, 'Euro', to_date('2010-10-23', 'yyyy-mm-dd'), 1004.00, 251.00, 104.00, 'Dollar', 2, 42, 2721.00, 120.00, 150.00, 200.00);
-
--- **TEST CUSTOMER TABLE INSERTS:
---Insert into BNN_customer values ( null , 'Test1 BB Hoch- und Tiefbau GmbH' , 'Tettaustra�e 1' , 'Bonn' , '53111' , 'Germany' );
---Insert into BNN_customer values ( null , 'Test2 BB Hoch- und Tiefbau GmbH' , 'Tettaustra�e 1' , 'Bonn' , '53111' , 'Germany' );
---Insert into BNN_customer values ( null , 'Test3 BB Hoch- und Tiefbau GmbH' , 'Tettaustra�e 1' , 'Bonn' , '53111' , 'Germany' );
---Insert into BNN_customer values ( null , 'Test4 BB Hoch- und Tiefbau GmbH' , 'Tettaustra�e 1' , 'Bonn' , '53111' , 'Germany' );
-
---Insert into LDN_customer values ( null , 'Test1 BB Hoch- und Tiefbau GmbH' , 'Tettaustra�e 1' , 'Bonn' , '53111' , 'Germany' );
---Insert into LDN_customer values ( null , 'Test2 BB Hoch- und Tiefbau GmbH' , 'Tettaustra�e 1' , 'Bonn' , '53111' , 'Germany' );
---Insert into LDN_customer values ( null , 'Test3 BB Hoch- und Tiefbau GmbH' , 'Tettaustra�e 1' , 'Bonn' , '53111' , 'Germany' );
---Insert into LDN_customer values ( null , 'Test4 BB Hoch- und Tiefbau GmbH' , 'Tettaustra�e 1' , 'Bonn' , '53111' , 'Germany' );
+Insert into ARTICLE values ( null , 'Test', 'Test' , 1 , 20000.00, 'Euro', to_date('2010-10-23', 'yyyy-mm-dd'), 1004.00, 251.00, 104.00, 'Dollar', 2, 42, 2721.00, 120.00, 150.00, 200.00);
+Insert into ARTICLE values ( null , 'Test', 'Test' , 1 , 20000.00, 'Euro', to_date('2010-10-23', 'yyyy-mm-dd'), 1004.00, 251.00, 104.00, 'Dollar', 2, 42, 2721.00, 120.00, 150.00, 200.00);
+Insert into ARTICLE values ( null , 'Test', 'Test' , 2 , 20000.00, 'Euro', to_date('2010-10-23', 'yyyy-mm-dd'), 1004.00, 251.00, 104.00, 'Dollar', 2, 42, 2721.00, 120.00, 150.00, 200.00);
+Insert into ARTICLE values ( null , 'Test', 'Test' , 2 , 20000.00, 'Euro', to_date('2010-10-23', 'yyyy-mm-dd'), 1004.00, 251.00, 104.00, 'Dollar', 2, 42, 2721.00, 120.00, 150.00, 200.00);
+Insert into ARTICLE values ( null , 'Test', 'Test' , 3 , 20000.00, 'Euro', to_date('2010-10-23', 'yyyy-mm-dd'), 1004.00, 251.00, 104.00, 'Dollar', 2, 42, 2721.00, 120.00, 150.00, 200.00);
+Insert into ARTICLE values ( null , 'Test', 'Test' , 3 , 20000.00, 'Euro', to_date('2010-10-23', 'yyyy-mm-dd'), 1004.00, 251.00, 104.00, 'Dollar', 2, 42, 2721.00, 120.00, 150.00, 200.00);
 
 
---** TEST IN GLOBAL VIEW INSERTS:
-Insert into customer values ( null , 'Test1 BB Hoch- und Tiefbau GmbH' , 'Tettaustra�e 1' , 'Bonn' , '53111' , 'Germany' );
+Insert into customer values ( null , 'Test' , 'Tettaustraße 1' , '53111' , 'Bonn' , 'Germany' );
+Insert into customer values ( null , 'Test' , 'Tettaustraße 1' , '53111' , 'Bonn' , 'Germany' );
+Insert into customer values ( null , 'Test' , '402 Testing Stree' , 'N12 8LY' , 'London' , 'United Kingdom' );
+Insert into customer values ( null , 'Test' , '402 Testing Stree' , 'N12 8LY' , 'London' , 'United Kingdom' );
+Insert into customer values ( null , 'Test' , '402 Testing Avenue' , 'NY 221012' , 'New York' , 'United States' );
 
 --
 -- ***************************************************************
@@ -65,7 +57,9 @@ Insert into customer values ( null , 'Test1 BB Hoch- und Tiefbau GmbH' , 'Tettau
 -- * Datensaetze)
 --
 
---DELETE FROM ...
+-- delete r from rent as r natural join customer c where c.company = 'Test';
+delete from customer where company = 'Test';
+delete from article where item = 'Test';
 
 --
 -- Systemdatum Ende
