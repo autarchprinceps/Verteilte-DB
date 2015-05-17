@@ -184,7 +184,7 @@ IF INSERTING THEN
  SELECT state
  INTO cust_state
  FROM customer 
- WHERE customer.ID_DEPOT = :new.ID_DEPOT;
+ WHERE customer.ID_CUSTOMER = :new.ID_CUSTOMER;
 dbms_output.Put_line(cust_state);
 IF cust_state = 'Germany' OR cust_state = 'Nethderlands' THEN
 INSERT INTO BNN_ARTICLE values (:new.ID_CUSTOMER, :new.ID_ARTICLE, :new.CONTRACT, :new.RENTFROM, :new.RENTTO, :new.RETURNFLAG);
