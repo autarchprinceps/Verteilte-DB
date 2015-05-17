@@ -197,8 +197,8 @@ END IF;
 IF DELETING THEN
  SELECT state
  INTO cust_state
- FROM depot 
- WHERE depot.ID_DEPOT = :old.ID_DEPOT;
+ FROM customer 
+ WHERE customer.ID_CUSTOMER = :old.ID_CUSTOMER;
 IF cust_state = 'Germany' OR cust_state = 'Nethderlands' THEN
 DELETE FROM BNN_ARTICLE WHERE ID_ARTICLE = :old.ID_ARTICLE AND ID_CUSTOMER = :old.ID_CUSTOMER AND CONTRACT = :old.CONTRACT;
 elsif cust_state = 'United Kingdom' THEN
