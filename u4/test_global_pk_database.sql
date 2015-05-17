@@ -18,7 +18,7 @@ set 	echo 		on
 set 	linesize 	256
 set 	pagesize 	50
 set     escape      \
-spool   ./test_global_pk_database.log
+spool   ./test_global_pk_database.newyork.log
 
 --
 -- Systemdatum Start
@@ -37,12 +37,12 @@ spool   ./test_global_pk_database.log
 -- * Globale Einfuegevorgaenge (pro lakaler Tabelle)  
 --
 
-Insert into ARTICLE values ( null , 'Test', 'Test' , 1 , 20000.00, 'Euro', to_date('2010-10-23', 'yyyy-mm-dd'), 1004.00, 251.00, 104.00, 'Dollar', 2, 42, 2721.00, 120.00, 150.00, 200.00);
-Insert into ARTICLE values ( null , 'Test', 'Test' , 1 , 20000.00, 'Euro', to_date('2010-10-23', 'yyyy-mm-dd'), 1004.00, 251.00, 104.00, 'Dollar', 2, 42, 2721.00, 120.00, 150.00, 200.00);
-Insert into ARTICLE values ( null , 'Test', 'Test' , 2 , 20000.00, 'Euro', to_date('2010-10-23', 'yyyy-mm-dd'), 1004.00, 251.00, 104.00, 'Dollar', 2, 42, 2721.00, 120.00, 150.00, 200.00);
-Insert into ARTICLE values ( null , 'Test', 'Test' , 2 , 20000.00, 'Euro', to_date('2010-10-23', 'yyyy-mm-dd'), 1004.00, 251.00, 104.00, 'Dollar', 2, 42, 2721.00, 120.00, 150.00, 200.00);
-Insert into ARTICLE values ( null , 'Test', 'Test' , 3 , 20000.00, 'Euro', to_date('2010-10-23', 'yyyy-mm-dd'), 1004.00, 251.00, 104.00, 'Dollar', 2, 42, 2721.00, 120.00, 150.00, 200.00);
-Insert into ARTICLE values ( null , 'Test', 'Test' , 3 , 20000.00, 'Euro', to_date('2010-10-23', 'yyyy-mm-dd'), 1004.00, 251.00, 104.00, 'Dollar', 2, 42, 2721.00, 120.00, 150.00, 200.00);
+Insert into ARTICLE values ( null , 'Test', 'Test' , 1 , 20000.00, 'Euro', to_date('2010-10-23', 'yyyy-mm-dd'), 1004.00, 251.00, 104.00, 'Dollar', 1, 1337, 2721.00, 120.00, 150.00, 200.00);
+Insert into ARTICLE values ( null , 'Test', 'Test' , 2 , 20000.00, 'Euro', to_date('2010-10-23', 'yyyy-mm-dd'), 1004.00, 251.00, 104.00, 'Dollar', 1, 1342, 2721.00, 120.00, 150.00, 200.00);
+Insert into ARTICLE values ( null , 'Test', 'Test' , 1 , 20000.00, 'Euro', to_date('2010-10-23', 'yyyy-mm-dd'), 1004.00, 251.00, 104.00, 'Dollar', 2, 1337, 2721.00, 120.00, 150.00, 200.00);
+Insert into ARTICLE values ( null , 'Test', 'Test' , 2 , 20000.00, 'Euro', to_date('2010-10-23', 'yyyy-mm-dd'), 1004.00, 251.00, 104.00, 'Dollar', 2, 1342, 2721.00, 120.00, 150.00, 200.00);
+Insert into ARTICLE values ( null , 'Test', 'Test' , 1 , 20000.00, 'Euro', to_date('2010-10-23', 'yyyy-mm-dd'), 1004.00, 251.00, 104.00, 'Dollar', 3, 1337, 2721.00, 120.00, 150.00, 200.00);
+Insert into ARTICLE values ( null , 'Test', 'Test' , 2 , 20000.00, 'Euro', to_date('2010-10-23', 'yyyy-mm-dd'), 1004.00, 251.00, 104.00, 'Dollar', 3, 1342, 2721.00, 120.00, 150.00, 200.00);
 
 
 Insert into customer values ( null , 'Test' , 'Tettaustraße 1' , '53111' , 'Bonn' , 'Germany' );
