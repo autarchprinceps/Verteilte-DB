@@ -18,7 +18,7 @@ set 	echo 		on
 set 	linesize 	256
 set 	pagesize 	50
 set     escape      \
-spool   ./test_global_pk_database.newyork.log
+spool   ./test_global_pk_database.log
 
 --
 -- Systemdatum Start
