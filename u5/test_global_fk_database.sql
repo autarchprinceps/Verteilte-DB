@@ -1,15 +1,15 @@
 -- ***************************************************************
--- * File Name:                  test_global_fk_database.sql     *
+-- * File Name:                  test_global_pk_database.sql     *
 -- * File Creator:               Knolle                          *
--- * CreationDate:               18. Mai 2015                    *
+-- * CreationDate:               10. Mai 2015                    *
 -- *                                                             *
 -- * <ChangeLogDate>             <ChangeLogText>                 *
 -- ***************************************************************
 --
 -- ***************************************************************
 -- * Verteilte Datenbanksysteme SS 2015
--- * Übung 5 
--- * Referentielle Integritaet
+-- * ï¿½bung 4 
+-- * Schluesselintegritaet
 --
 -- ***************************************************************
 -- * SQL*plus Job Control Section
@@ -18,7 +18,7 @@ set 	echo 		on
 set 	linesize 	256
 set 	pagesize 	50
 set     escape      \
-spool   ./test_global_fk_database.log
+spool   ./test_global_pk_database.log
 
 --
 -- Systemdatum Start
@@ -34,23 +34,32 @@ spool   ./test_global_fk_database.log
 
 --
 -- ***************************************************************
--- * Globale Einfuegevorgaenge (pro globaler Tabelle)  
+-- * Globale Einfuegevorgaenge (pro lakaler Tabelle)  
 --
 
-INSERT INTO ...
+Insert into ARTICLE values ( null , 'Test', 'Test' , 1 , 20000.00, 'Euro', to_date('2010-10-23', 'yyyy-mm-dd'), 1004.00, 251.00, 104.00, 'Dollar', 1, 1337, 2721.00, 120.00, 150.00, 200.00);
+Insert into ARTICLE values ( null , 'Test', 'Test' , 2 , 20000.00, 'Euro', to_date('2010-10-23', 'yyyy-mm-dd'), 1004.00, 251.00, 104.00, 'Dollar', 1, 1342, 2721.00, 120.00, 150.00, 200.00);
+Insert into ARTICLE values ( null , 'Test', 'Test' , 1 , 20000.00, 'Euro', to_date('2010-10-23', 'yyyy-mm-dd'), 1004.00, 251.00, 104.00, 'Dollar', 2, 1337, 2721.00, 120.00, 150.00, 200.00);
+Insert into ARTICLE values ( null , 'Test', 'Test' , 2 , 20000.00, 'Euro', to_date('2010-10-23', 'yyyy-mm-dd'), 1004.00, 251.00, 104.00, 'Dollar', 2, 1342, 2721.00, 120.00, 150.00, 200.00);
+Insert into ARTICLE values ( null , 'Test', 'Test' , 1 , 20000.00, 'Euro', to_date('2010-10-23', 'yyyy-mm-dd'), 1004.00, 251.00, 104.00, 'Dollar', 3, 1337, 2721.00, 120.00, 150.00, 200.00);
+Insert into ARTICLE values ( null , 'Test', 'Test' , 2 , 20000.00, 'Euro', to_date('2010-10-23', 'yyyy-mm-dd'), 1004.00, 251.00, 104.00, 'Dollar', 3, 1342, 2721.00, 120.00, 150.00, 200.00);
+
+
+Insert into customer values ( null , 'Test' , 'TettaustraÃŸe 1' , '53111' , 'Bonn' , 'Germany' );
+Insert into customer values ( null , 'Test' , 'TettaustraÃŸe 1' , '53111' , 'Bonn' , 'Germany' );
+Insert into customer values ( null , 'Test' , '402 Testing Stree' , 'N12 8LY' , 'London' , 'United Kingdom' );
+Insert into customer values ( null , 'Test' , '402 Testing Stree' , 'N12 8LY' , 'London' , 'United Kingdom' );
+Insert into customer values ( null , 'Test' , '402 Testing Avenue' , 'NY 221012' , 'New York' , 'United States' );
 
 --
 -- ***************************************************************
--- * Globale Loeschvorgaenge (pro globaler Tabelle)
+-- * Globale Loeschvorgaenge (idealerweise die oben eingefï¿½gten 
+-- * Datensaetze)
 --
 
-DELETE FROM ...
---
--- ***************************************************************
--- * Globale Aenderungsvorgänge (pro globaler Tabelle)
---
-
-UPDATE SET ...
+-- delete r from rent as r natural join customer c where c.company = 'Test';
+delete from customer where company = 'Test';
+delete from article where item = 'Test';
 
 --
 -- Systemdatum Ende
