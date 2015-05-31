@@ -1,5 +1,5 @@
 -- ***************************************************************
--- * File Name:                  test_global_pk_database.sql     *
+-- * File Name:                  test_global_fk_database.sql     *
 -- * File Creator:               Knolle                          *
 -- * CreationDate:               10. Mai 2015                    *
 -- *                                                             *
@@ -8,7 +8,7 @@
 --
 -- ***************************************************************
 -- * Verteilte Datenbanksysteme SS 2015
--- * �bung 4 
+-- * �bung 5 
 -- * Schluesselintegritaet
 --
 -- ***************************************************************
@@ -18,7 +18,7 @@ set 	echo 		on
 set 	linesize 	256
 set 	pagesize 	50
 set     escape      \
-spool   ./test_global_pk_database.log
+spool   ./test_global_fk_database.log
 
 --
 -- Systemdatum Start
