@@ -7,7 +7,7 @@
   
 USER                           TO_CHAR(SYSDATE,'DD-MM-YYHH24:MI:SS')
 ------------------------------ -------------------------------------
-PROBIN2S                       31-05-15 12:16:03                    
+PROBIN2S                       31-05-15 18:40:07                    
 
 > --
 > -- ***************************************************************
@@ -19,6 +19,8 @@ PROBIN2S                       31-05-15 12:16:03
 > --
 > DROP TRIGGER BNN_ARTICLE_TRI
 trigger BNN_ARTICLE_TRI gelöscht.
+> DROP TRIGGER BNN_RENT_TRI
+trigger BNN_RENT_TRI gelöscht.
 > DROP TRIGGER BNN_CUSTOMER_TRI
 trigger BNN_CUSTOMER_TRI gelöscht.
 > DROP TRIGGER CUSTOMER_GLO_TRI
@@ -29,7 +31,7 @@ trigger ARTICLE_GLO_TRI gelöscht.
 trigger RENT_GLO_TRI gelöscht.
 > DROP SEQUENCE CUSTOMER_SEQ
 
-Fehler beim Start in Zeile : 46 in Befehl -
+Fehler beim Start in Zeile : 47 in Befehl -
 DROP SEQUENCE CUSTOMER_SEQ
 Fehlerbericht -
 SQL-Fehler: ORA-02289: Sequence ist nicht vorhanden.
@@ -40,7 +42,7 @@ SQL-Fehler: ORA-02289: Sequence ist nicht vorhanden.
            the right to perform the desired operation on this sequence.
 > DROP SEQUENCE ARTICLE_SEQ
 
-Fehler beim Start in Zeile : 47 in Befehl -
+Fehler beim Start in Zeile : 48 in Befehl -
 DROP SEQUENCE ARTICLE_SEQ
 Fehlerbericht -
 SQL-Fehler: ORA-02289: Sequence ist nicht vorhanden.
@@ -86,8 +88,8 @@ WHEN OTHERS THEN
 NULL;
 END;
 TRIGGER BNN_ARTICLE_TRI kompiliert
-> CREATE OR REPLACE TRIGGER BNN_ARTICLE_TRI
-BEFORE INSERT ON BNN_ARTICLE
+> CREATE OR REPLACE TRIGGER BNN_RENT_TRI
+BEFORE INSERT ON BNN_RENT
 FOR EACH ROW
 BEGIN
 SELECT BNN_RENT_SEQ.NEXTVAL
@@ -97,8 +99,7 @@ EXCEPTION
 WHEN OTHERS THEN
 NULL;
 END;
-TRIGGER BNN_ARTICLE_TRI kompiliert
-Errors: check compiler log
+TRIGGER BNN_RENT_TRI kompiliert
 > CREATE OR REPLACE TRIGGER BNN_CUSTOMER_TRI
 BEFORE INSERT ON BNN_CUSTOMER
 FOR EACH ROW
@@ -287,7 +288,7 @@ TRIGGER RENT_GLO_TRI kompiliert
   
 USER                           TO_CHAR(SYSDATE,'DD-MM-YYHH24:MI:SS')
 ------------------------------ -------------------------------------
-PROBIN2S                       31-05-15 12:16:05                    
+PROBIN2S                       31-05-15 18:40:23                    
 
 > --
 > spool off

@@ -7,7 +7,7 @@
   
 USER                           TO_CHAR(SYSDATE,'DD-MM-YYHH24:MI:SS')
 ------------------------------ -------------------------------------
-PROBIN2S                       31-05-15 12:17:50                    
+PROBIN2S                       31-05-15 18:42:04                    
 
 > --
 > -- ***************************************************************
@@ -19,6 +19,15 @@ PROBIN2S                       31-05-15 12:17:50
 > --
 > DROP TRIGGER nyk_ARTICLE_TRI
 trigger NYK_ARTICLE_TRI gelöscht.
+> DROP TRIGGER nyk_RENT_TRI
+
+Fehler beim Start in Zeile : 41 in Befehl -
+DROP TRIGGER nyk_RENT_TRI
+Fehlerbericht -
+SQL-Fehler: ORA-04080: Trigger 'NYK_RENT_TRI' ist nicht vorhanden
+04080. 00000 -  "trigger '%s' does not exist"
+*Cause:    The TRIGGER name is invalid.
+*Action:   Check the trigger name.
 > DROP TRIGGER nyk_CUSTOMER_TRI
 trigger NYK_CUSTOMER_TRI gelöscht.
 > DROP TRIGGER CUSTOMER_GLO_TRI
@@ -28,42 +37,29 @@ trigger ARTICLE_GLO_TRI gelöscht.
 > DROP TRIGGER RENT_GLO_TRI
 trigger RENT_GLO_TRI gelöscht.
 > DROP SYNONYM CUSTOMER_SEQ
-synonym CUSTOMER_SEQ gelöscht.
+
+Fehler beim Start in Zeile : 47 in Befehl -
+DROP SYNONYM CUSTOMER_SEQ
+Fehlerbericht -
+SQL-Fehler: ORA-01434: Privates Synonym, das gelöscht werden soll, ist nicht vorhanden.
+01434. 00000 -  "private synonym to be dropped does not exist"
+*Cause:    
+*Action:
 > DROP SYNONYM ARTICLE_SEQ
-synonym ARTICLE_SEQ gelöscht.
-> DROP SEQUENCE nyk_CUSTOMER_SEQ
 
 Fehler beim Start in Zeile : 48 in Befehl -
-DROP SEQUENCE nyk_CUSTOMER_SEQ
+DROP SYNONYM ARTICLE_SEQ
 Fehlerbericht -
-SQL-Fehler: ORA-02289: Sequence ist nicht vorhanden.
-02289. 00000 -  "sequence does not exist"
-*Cause:    The specified sequence does not exist, or the user does
-           not have the required privilege to perform this operation.
-*Action:   Make sure the sequence name is correct, and that you have
-           the right to perform the desired operation on this sequence.
+SQL-Fehler: ORA-01434: Privates Synonym, das gelöscht werden soll, ist nicht vorhanden.
+01434. 00000 -  "private synonym to be dropped does not exist"
+*Cause:    
+*Action:
+> DROP SEQUENCE nyk_CUSTOMER_SEQ
+sequence NYK_CUSTOMER_SEQ gelöscht.
 > DROP SEQUENCE nyk_ARTICLE_SEQ
-
-Fehler beim Start in Zeile : 49 in Befehl -
-DROP SEQUENCE nyk_ARTICLE_SEQ
-Fehlerbericht -
-SQL-Fehler: ORA-02289: Sequence ist nicht vorhanden.
-02289. 00000 -  "sequence does not exist"
-*Cause:    The specified sequence does not exist, or the user does
-           not have the required privilege to perform this operation.
-*Action:   Make sure the sequence name is correct, and that you have
-           the right to perform the desired operation on this sequence.
+sequence NYK_ARTICLE_SEQ gelöscht.
 > DROP SEQUENCE nyk_RENT_SEQ
-
-Fehler beim Start in Zeile : 50 in Befehl -
-DROP SEQUENCE nyk_RENT_SEQ
-Fehlerbericht -
-SQL-Fehler: ORA-02289: Sequence ist nicht vorhanden.
-02289. 00000 -  "sequence does not exist"
-*Cause:    The specified sequence does not exist, or the user does
-           not have the required privilege to perform this operation.
-*Action:   Make sure the sequence name is correct, and that you have
-           the right to perform the desired operation on this sequence.
+sequence NYK_RENT_SEQ gelöscht.
 > --
 > -- ***************************************************************
 > -- * Erstellung der lokalen Schluesselintegritaet
@@ -95,8 +91,8 @@ WHEN OTHERS THEN
 NULL;
 END;
 TRIGGER NYK_ARTICLE_TRI kompiliert
-> CREATE OR REPLACE TRIGGER nyk_ARTICLE_TRI
-BEFORE INSERT ON nyk_ARTICLE
+> CREATE OR REPLACE TRIGGER nyk_RENT_TRI
+BEFORE INSERT ON nyk_rent
 FOR EACH ROW
 BEGIN
 SELECT nyk_RENT_SEQ.NEXTVAL
@@ -106,8 +102,7 @@ EXCEPTION
 WHEN OTHERS THEN
 NULL;
 END;
-TRIGGER NYK_ARTICLE_TRI kompiliert
-Errors: check compiler log
+TRIGGER NYK_RENT_TRI kompiliert
 > CREATE OR REPLACE TRIGGER nyk_CUSTOMER_TRI
 BEFORE INSERT ON nyk_CUSTOMER
 FOR EACH ROW
@@ -296,7 +291,7 @@ TRIGGER RENT_GLO_TRI kompiliert
   
 USER                           TO_CHAR(SYSDATE,'DD-MM-YYHH24:MI:SS')
 ------------------------------ -------------------------------------
-PROBIN2S                       31-05-15 12:17:54                    
+PROBIN2S                       31-05-15 18:42:22                    
 
 > --
 > spool off
