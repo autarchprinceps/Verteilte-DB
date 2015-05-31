@@ -41,11 +41,11 @@ insert into ARTICLE values ( null , 'Test', 'Test' , 23 , 20000.00, 'Euro', to_d
 insert into ARTICLE values ( null , 'Test', 'Test' , 1 , 20000.00, 'Euro', to_date('2010-10-23', 'yyyy-mm-dd'), 1004.00, 251.00, 104.00, 'Dollar', 5, 1337, 2721.00, 120.00, 150.00, 200.00);
 --	Insert rent
 --	* correct
-insert into rent values (11, 17, 3, to_date('2017-01-01','yyyy-mm-dd'), to_date('2018-01-01','yyyy-mm-dd'), 0);
+insert into rent values (11, 17, null, to_date('2017-01-01','yyyy-mm-dd'), to_date('2018-01-01','yyyy-mm-dd'), 0);
 --	* without customer
-insert into rent values (42, 17, 3, to_date('2017-01-01','yyyy-mm-dd'), to_date('2018-01-01','yyyy-mm-dd'), 0);
+insert into rent values (42, 17, null, to_date('2017-01-01','yyyy-mm-dd'), to_date('2018-01-01','yyyy-mm-dd'), 0);
 --	* without article
-insert into rent values (11, 42, 3, to_date('2017-01-01','yyyy-mm-dd'), to_date('2018-01-01','yyyy-mm-dd'), 0);
+insert into rent values (11, 42, null, to_date('2017-01-01','yyyy-mm-dd'), to_date('2018-01-01','yyyy-mm-dd'), 0);
 --	Delete customer
 --	* correct
 delete from customer where id_customer = 2001;
@@ -58,11 +58,11 @@ delete from customer where id_customer = 2011;
 delete from article where id_article = 2001;
 --	* with existing rent
 insert into ARTICLE values ( null , 'Test', 'Test' , 1 , 20000.00, 'Euro', to_date('2010-10-23', 'yyyy-mm-dd'), 1004.00, 251.00, 104.00, 'Dollar', 1, 1337, 2721.00, 120.00, 150.00, 200.00);
-insert into rent values (11, 2011, 1, to_date('2017-01-01','yyyy-mm-dd'), to_date('2018-01-01','yyyy-mm-dd'), 0);
+insert into rent values (11, 2011, null, to_date('2017-01-01','yyyy-mm-dd'), to_date('2018-01-01','yyyy-mm-dd'), 0);
 delete from article where id_article = 2011;
 --	Delete rent
 --	* correct
-delete from rent where id_customer = 11 and id_article = 17 and contract = 3
+delete from rent where id_customer = 11 and id_article = 17 and contract = 2001
 
 
 -- Aufräumen
