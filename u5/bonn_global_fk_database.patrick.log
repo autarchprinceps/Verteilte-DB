@@ -1,76 +1,80 @@
--- ***************************************************************
--- * File Name:                  bonn_global_fk_database.sql     *
--- * File Creator:               Knolle                          *
--- * CreationDate:               10. Mai 2015                    *
--- *                                                             *
--- * <ChangeLogDate>             <ChangeLogText>                 *
--- ***************************************************************
---
--- ***************************************************************
--- * Verteilte Datenbanksysteme SS 2015
--- * �bung 4
--- * Schluesselintegritaet
---
--- ***************************************************************
--- * SQL*plus Job Control Section
---
-set 	echo 		on
-set 	linesize 	256
-set 	pagesize 	50
-set     escape      \
-spool   ./bonn_global_fk_database.log
-
---
--- Systemdatum Start
---
-  SELECT user,
+> --
+> -- Systemdatum Start
+> --
+> SELECT user,
          TO_CHAR(SYSDATE, 'dd-mm-yy hh24:mi:ss') 
   FROM   dual
-  ;  
---
--- ***************************************************************
--- * Das globale Schema fuer den Standort Bonn
---
+  
+USER                           TO_CHAR(SYSDATE,'DD-MM-YYHH24:MI:SS')
+------------------------------ -------------------------------------
+PROBIN2S                       31-05-15 12:16:03                    
 
---
--- ***************************************************************
--- * Initialisierung
---
+> --
+> -- ***************************************************************
+> -- * Das globale Schema fuer den Standort Bonn
+> --
+> --
+> -- ***************************************************************
+> -- * Initialisierung
+> --
+> DROP TRIGGER BNN_ARTICLE_TRI
+trigger BNN_ARTICLE_TRI gelöscht.
+> DROP TRIGGER BNN_CUSTOMER_TRI
+trigger BNN_CUSTOMER_TRI gelöscht.
+> DROP TRIGGER CUSTOMER_GLO_TRI
+trigger CUSTOMER_GLO_TRI gelöscht.
+> DROP TRIGGER ARTICLE_GLO_TRI
+trigger ARTICLE_GLO_TRI gelöscht.
+> DROP TRIGGER RENT_GLO_TRI
+trigger RENT_GLO_TRI gelöscht.
+> DROP SEQUENCE CUSTOMER_SEQ
 
-DROP TRIGGER BNN_ARTICLE_TRI;
-DROP TRIGGER BNN_CUSTOMER_TRI;
-DROP TRIGGER CUSTOMER_GLO_TRI;
-DROP TRIGGER ARTICLE_GLO_TRI;
-DROP TRIGGER RENT_GLO_TRI;
+Fehler beim Start in Zeile : 46 in Befehl -
+DROP SEQUENCE CUSTOMER_SEQ
+Fehlerbericht -
+SQL-Fehler: ORA-02289: Sequence ist nicht vorhanden.
+02289. 00000 -  "sequence does not exist"
+*Cause:    The specified sequence does not exist, or the user does
+           not have the required privilege to perform this operation.
+*Action:   Make sure the sequence name is correct, and that you have
+           the right to perform the desired operation on this sequence.
+> DROP SEQUENCE ARTICLE_SEQ
 
-DROP SEQUENCE CUSTOMER_SEQ;
-DROP SEQUENCE ARTICLE_SEQ;
-DROP SEQUENCE BNN_CUSTOMER_SEQ;
-DROP SEQUENCE BNN_ARTICLE_SEQ;
-DROP SEQUENCE BNN_RENT_SEQ;
-
---
--- ***************************************************************
--- * Erstellung der lokalen Schluesselintegritaet
---
-
-CREATE SEQUENCE BNN_CUSTOMER_SEQ
+Fehler beim Start in Zeile : 47 in Befehl -
+DROP SEQUENCE ARTICLE_SEQ
+Fehlerbericht -
+SQL-Fehler: ORA-02289: Sequence ist nicht vorhanden.
+02289. 00000 -  "sequence does not exist"
+*Cause:    The specified sequence does not exist, or the user does
+           not have the required privilege to perform this operation.
+*Action:   Make sure the sequence name is correct, and that you have
+           the right to perform the desired operation on this sequence.
+> DROP SEQUENCE BNN_CUSTOMER_SEQ
+sequence BNN_CUSTOMER_SEQ gelöscht.
+> DROP SEQUENCE BNN_ARTICLE_SEQ
+sequence BNN_ARTICLE_SEQ gelöscht.
+> DROP SEQUENCE BNN_RENT_SEQ
+sequence BNN_RENT_SEQ gelöscht.
+> --
+> -- ***************************************************************
+> -- * Erstellung der lokalen Schluesselintegritaet
+> --
+> CREATE SEQUENCE BNN_CUSTOMER_SEQ
 START WITH 2001
 INCREMENT BY 10
-NOCYCLE;
-
-CREATE SEQUENCE BNN_ARTICLE_SEQ
+NOCYCLE
+sequence BNN_CUSTOMER_SEQ erstellt.
+> CREATE SEQUENCE BNN_ARTICLE_SEQ
 START WITH 2001
 INCREMENT BY 10
-NOCYCLE;
-
-CREATE SEQUENCE BNN_RENT_SEQ
+NOCYCLE
+sequence BNN_ARTICLE_SEQ erstellt.
+> CREATE SEQUENCE BNN_RENT_SEQ
 START WITH 2001
 INCREMENT BY 10
-NOCYCLE;
-
-
-CREATE OR REPLACE TRIGGER BNN_ARTICLE_TRI
+NOCYCLE
+sequence BNN_RENT_SEQ erstellt.
+> CREATE OR REPLACE TRIGGER BNN_ARTICLE_TRI
 BEFORE INSERT ON BNN_ARTICLE
 FOR EACH ROW
 BEGIN
@@ -81,9 +85,8 @@ EXCEPTION
 WHEN OTHERS THEN
 NULL;
 END;
-/
-
-CREATE OR REPLACE TRIGGER BNN_ARTICLE_TRI
+TRIGGER BNN_ARTICLE_TRI kompiliert
+> CREATE OR REPLACE TRIGGER BNN_ARTICLE_TRI
 BEFORE INSERT ON BNN_ARTICLE
 FOR EACH ROW
 BEGIN
@@ -94,9 +97,9 @@ EXCEPTION
 WHEN OTHERS THEN
 NULL;
 END;
-/
-
-CREATE OR REPLACE TRIGGER BNN_CUSTOMER_TRI
+TRIGGER BNN_ARTICLE_TRI kompiliert
+Errors: check compiler log
+> CREATE OR REPLACE TRIGGER BNN_CUSTOMER_TRI
 BEFORE INSERT ON BNN_CUSTOMER
 FOR EACH ROW
 BEGIN
@@ -107,14 +110,12 @@ EXCEPTION
 WHEN OTHERS THEN
 NULL;
 END;
-/
-
---
--- ***************************************************************
--- * Erstellung der globalen Schluesselintegritaet
---
-
-CREATE OR REPLACE TRIGGER CUSTOMER_GLO_TRI
+TRIGGER BNN_CUSTOMER_TRI kompiliert
+> --
+> -- ***************************************************************
+> -- * Erstellung der globalen Schluesselintegritaet
+> --
+> CREATE OR REPLACE TRIGGER CUSTOMER_GLO_TRI
 INSTEAD OF INSERT OR DELETE ON customer
 FOR EACH ROW
 DECLARE
@@ -157,9 +158,8 @@ IF DELETING THEN
 	END IF;
 END IF;
 END;
-/
-
-CREATE OR REPLACE TRIGGER ARTICLE_GLO_TRI
+TRIGGER CUSTOMER_GLO_TRI kompiliert
+> CREATE OR REPLACE TRIGGER ARTICLE_GLO_TRI
 INSTEAD OF INSERT OR DELETE ON article
 FOR EACH ROW
 DECLARE
@@ -227,9 +227,8 @@ IF DELETING THEN
 	END IF;
 END IF;
 END;
-/
-
-CREATE OR REPLACE TRIGGER RENT_GLO_TRI
+TRIGGER ARTICLE_GLO_TRI kompiliert
+> CREATE OR REPLACE TRIGGER RENT_GLO_TRI
 INSTEAD OF INSERT OR DELETE ON rent
 FOR EACH ROW
 DECLARE
@@ -278,15 +277,17 @@ IF DELETING THEN
 	END IF;
 END IF;
 END;
-/
-
-
---
--- Systemdatum Ende
---
-  SELECT user,
+TRIGGER RENT_GLO_TRI kompiliert
+> --
+> -- Systemdatum Ende
+> --
+> SELECT user,
          TO_CHAR(SYSDATE, 'dd-mm-yy hh24:mi:ss') 
   FROM   dual
-  ;  
---
-spool off
+  
+USER                           TO_CHAR(SYSDATE,'DD-MM-YYHH24:MI:SS')
+------------------------------ -------------------------------------
+PROBIN2S                       31-05-15 12:16:05                    
+
+> --
+> spool off

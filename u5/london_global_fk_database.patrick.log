@@ -1,120 +1,130 @@
--- ***************************************************************
--- * File Name:                  newyork_global_fk_database.sql     *
--- * File Creator:               Knolle                          *
--- * CreationDate:               10. Mai 2015                    *
--- *                                                             *
--- * <ChangeLogDate>             <ChangeLogText>                 *
--- ***************************************************************
---
--- ***************************************************************
--- * Verteilte Datenbanksysteme SS 2015
--- * �bung 4
--- * Schluesselintegritaet
---
--- ***************************************************************
--- * SQL*plus Job Control Section
---
-set 	echo 		on
-set 	linesize 	256
-set 	pagesize 	50
-set     escape      \
-spool   ./newyork_global_fk_database.log
-
---
--- Systemdatum Start
---
-  SELECT user,
+> --
+> -- Systemdatum Start
+> --
+> SELECT user,
          TO_CHAR(SYSDATE, 'dd-mm-yy hh24:mi:ss') 
   FROM   dual
-  ;  
---
--- ***************************************************************
--- * Das globale Schema fuer den Standort newyork
---
+  
+USER                           TO_CHAR(SYSDATE,'DD-MM-YYHH24:MI:SS')
+------------------------------ -------------------------------------
+PROBIN2S                       31-05-15 12:17:59                    
 
---
--- ***************************************************************
--- * Initialisierung
---
+> --
+> -- ***************************************************************
+> -- * Das globale Schema fuer den Standort london
+> --
+> --
+> -- ***************************************************************
+> -- * Initialisierung
+> --
+> DROP TRIGGER ldn_ARTICLE_TRI
+trigger LDN_ARTICLE_TRI gelöscht.
+> DROP TRIGGER ldn_CUSTOMER_TRI
+trigger LDN_CUSTOMER_TRI gelöscht.
+> DROP TRIGGER CUSTOMER_GLO_TRI
+trigger CUSTOMER_GLO_TRI gelöscht.
+> DROP TRIGGER ARTICLE_GLO_TRI
+trigger ARTICLE_GLO_TRI gelöscht.
+> DROP TRIGGER RENT_GLO_TRI
+trigger RENT_GLO_TRI gelöscht.
+> DROP SYNONYM CUSTOMER_SEQ
+synonym CUSTOMER_SEQ gelöscht.
+> DROP SYNONYM ARTICLE_SEQ
+synonym ARTICLE_SEQ gelöscht.
+> DROP SEQUENCE ldn_CUSTOMER_SEQ
 
-DROP TRIGGER nyk_ARTICLE_TRI;
-DROP TRIGGER nyk_CUSTOMER_TRI;
-DROP TRIGGER CUSTOMER_GLO_TRI;
-DROP TRIGGER ARTICLE_GLO_TRI;
-DROP TRIGGER RENT_GLO_TRI;
+Fehler beim Start in Zeile : 48 in Befehl -
+DROP SEQUENCE ldn_CUSTOMER_SEQ
+Fehlerbericht -
+SQL-Fehler: ORA-02289: Sequence ist nicht vorhanden.
+02289. 00000 -  "sequence does not exist"
+*Cause:    The specified sequence does not exist, or the user does
+           not have the required privilege to perform this operation.
+*Action:   Make sure the sequence name is correct, and that you have
+           the right to perform the desired operation on this sequence.
+> DROP SEQUENCE ldn_ARTICLE_SEQ
 
-DROP SYNONYM CUSTOMER_SEQ;
-DROP SYNONYM ARTICLE_SEQ;
-DROP SEQUENCE nyk_CUSTOMER_SEQ;
-DROP SEQUENCE nyk_ARTICLE_SEQ;
-DROP SEQUENCE nyk_RENT_SEQ;
+Fehler beim Start in Zeile : 49 in Befehl -
+DROP SEQUENCE ldn_ARTICLE_SEQ
+Fehlerbericht -
+SQL-Fehler: ORA-02289: Sequence ist nicht vorhanden.
+02289. 00000 -  "sequence does not exist"
+*Cause:    The specified sequence does not exist, or the user does
+           not have the required privilege to perform this operation.
+*Action:   Make sure the sequence name is correct, and that you have
+           the right to perform the desired operation on this sequence.
+> DROP SEQUENCE ldn_RENT_SEQ
 
---
--- ***************************************************************
--- * Erstellung der lokalen Schluesselintegritaet
---
-
-CREATE SEQUENCE nyk_CUSTOMER_SEQ
-START WITH 2003
+Fehler beim Start in Zeile : 50 in Befehl -
+DROP SEQUENCE ldn_RENT_SEQ
+Fehlerbericht -
+SQL-Fehler: ORA-02289: Sequence ist nicht vorhanden.
+02289. 00000 -  "sequence does not exist"
+*Cause:    The specified sequence does not exist, or the user does
+           not have the required privilege to perform this operation.
+*Action:   Make sure the sequence name is correct, and that you have
+           the right to perform the desired operation on this sequence.
+> --
+> -- ***************************************************************
+> -- * Erstellung der lokalen Schluesselintegritaet
+> --
+> CREATE SEQUENCE ldn_CUSTOMER_SEQ
+START WITH 2002
 INCREMENT BY 10
-NOCYCLE;
-
-CREATE SEQUENCE nyk_ARTICLE_SEQ
-START WITH 2003
+NOCYCLE
+sequence LDN_CUSTOMER_SEQ erstellt.
+> CREATE SEQUENCE ldn_ARTICLE_SEQ
+START WITH 2002
 INCREMENT BY 10
-NOCYCLE;
-
-CREATE SEQUENCE nyk_RENT_SEQ
-START WITH 2003
+NOCYCLE
+sequence LDN_ARTICLE_SEQ erstellt.
+> CREATE SEQUENCE ldn_RENT_SEQ
+START WITH 2002
 INCREMENT BY 10
-NOCYCLE;
-
-
-CREATE OR REPLACE TRIGGER nyk_ARTICLE_TRI
-BEFORE INSERT ON nyk_ARTICLE
+NOCYCLE
+sequence LDN_RENT_SEQ erstellt.
+> CREATE OR REPLACE TRIGGER ldn_ARTICLE_TRI
+BEFORE INSERT ON ldn_ARTICLE
 FOR EACH ROW
 BEGIN
-SELECT nyk_ARTICLE_SEQ.NEXTVAL
+SELECT ldn_ARTICLE_SEQ.NEXTVAL
 INTO :NEW.ID_ARTICLE
 FROM dual;
 EXCEPTION
 WHEN OTHERS THEN
 NULL;
 END;
-/
-
-CREATE OR REPLACE TRIGGER nyk_ARTICLE_TRI
-BEFORE INSERT ON nyk_ARTICLE
+TRIGGER LDN_ARTICLE_TRI kompiliert
+> CREATE OR REPLACE TRIGGER ldn_ARTICLE_TRI
+BEFORE INSERT ON ldn_ARTICLE
 FOR EACH ROW
 BEGIN
-SELECT nyk_RENT_SEQ.NEXTVAL
+SELECT ldn_RENT_SEQ.NEXTVAL
 INTO :NEW.CONTRACT
 FROM dual;
 EXCEPTION
 WHEN OTHERS THEN
 NULL;
 END;
-/
-
-CREATE OR REPLACE TRIGGER nyk_CUSTOMER_TRI
-BEFORE INSERT ON nyk_CUSTOMER
+TRIGGER LDN_ARTICLE_TRI kompiliert
+Errors: check compiler log
+> CREATE OR REPLACE TRIGGER ldn_CUSTOMER_TRI
+BEFORE INSERT ON ldn_CUSTOMER
 FOR EACH ROW
 BEGIN
-SELECT nyk_CUSTOMER_SEQ.NEXTVAL
+SELECT ldn_CUSTOMER_SEQ.NEXTVAL
 INTO :NEW.ID_CUSTOMER
 FROM dual;
 EXCEPTION
 WHEN OTHERS THEN
 NULL;
 END;
-/
-
---
--- ***************************************************************
--- * Erstellung der globalen Schluesselintegritaet
---
-
-CREATE OR REPLACE TRIGGER CUSTOMER_GLO_TRI
+TRIGGER LDN_CUSTOMER_TRI kompiliert
+> --
+> -- ***************************************************************
+> -- * Erstellung der globalen Schluesselintegritaet
+> --
+> CREATE OR REPLACE TRIGGER CUSTOMER_GLO_TRI
 INSTEAD OF INSERT OR DELETE ON customer
 FOR EACH ROW
 DECLARE
@@ -125,10 +135,10 @@ IF INSERTING THEN
 		INSERT INTO BNN_CUSTOMER@bonn values (NULL,
 		:new.COMPANY, :new.ADDRESS, :new.ZIP, :new.CITY, :new.STATE);
 	ELSIF :new.state = 'United Kingdom' THEN
-		INSERT INTO LDN_CUSTOMER@london values (NULL,
+		INSERT INTO LDN_CUSTOMER values (NULL,
 		:new.COMPANY, :new.ADDRESS, :new.ZIP, :new.CITY, :new.STATE);
 	ELSIF :new.state = 'United States' OR :new.state = 'Canada' THEN
-		INSERT INTO NYK_CUSTOMER values (NULL,
+		INSERT INTO NYK_CUSTOMER@newyork values (NULL,
 		:new.COMPANY, :new.ADDRESS, :new.ZIP, :new.CITY, :new.STATE);
 	ELSE
 		RAISE_APPLICATION_ERROR(-21000, 'Invalid state.');
@@ -146,10 +156,10 @@ IF DELETING THEN
 			DELETE FROM BNN_CUSTOMER@bonn WHERE ID_CUSTOMER =
 			:old.ID_CUSTOMER;
 		elsif :old.state = 'United Kingdom' THEN
-			DELETE FROM LDN_CUSTOMER@london WHERE ID_CUSTOMER =
+			DELETE FROM LDN_CUSTOMER WHERE ID_CUSTOMER =
 			:old.ID_CUSTOMER;
 		elsif :old.state = 'United States' OR :new.state = 'Canada' THEN
-			DELETE FROM NYK_CUSTOMER WHERE ID_CUSTOMER =
+			DELETE FROM NYK_CUSTOMER@newyork WHERE ID_CUSTOMER =
 			:old.ID_CUSTOMER;
 		ELSE
 			RAISE_APPLICATION_ERROR(-21002, 'Invalid state.');
@@ -157,9 +167,8 @@ IF DELETING THEN
 	END IF;
 END IF;
 END;
-/
-
-CREATE OR REPLACE TRIGGER ARTICLE_GLO_TRI
+TRIGGER CUSTOMER_GLO_TRI kompiliert
+> CREATE OR REPLACE TRIGGER ARTICLE_GLO_TRI
 INSTEAD OF INSERT OR DELETE ON article
 FOR EACH ROW
 DECLARE
@@ -187,13 +196,13 @@ IF INSERTING THEN
 			:new.SAL_RENTALPRICEDAY,:new.SAL_CURRENCY, :new.ID_DEPOT, :new.DEP_LOCATION,
 			:new.DEP_WEIGHTKG, :new.DEP_HEIGHTCM, :new.DEP_LENGTHCM, :new.DEP_BREADTHCM);
 		ELSIF depot_state = 'United Kingdom' THEN
-			INSERT INTO LDN_ARTICLE@london values (NULL,
+			INSERT INTO LDN_ARTICLE values (NULL,
 			:new.ITEM, :new.TYPE, :new.ID_SUPPLIER, :new.PUR_BASEPRICE, :new.PUR_CURRENCY,
 			:new.PUR_PURCHASEDATE, :new.SAL_RENTALPRICEMONTH, :new.SAL_RENTALPRICEWEEK,
 			:new.SAL_RENTALPRICEDAY, :new.SAL_CURRENCY, :new.ID_DEPOT, :new.DEP_LOCATION,
 			:new.DEP_WEIGHTKG, :new.DEP_HEIGHTCM, :new.DEP_LENGTHCM, :new.DEP_BREADTHCM);
 		ELSIF depot_state = 'USA' THEN
-			INSERT INTO NYK_ARTICLE values (NULL,
+			INSERT INTO NYK_ARTICLE@newyork values (NULL,
 			:new.ITEM, :new.TYPE, :new.ID_SUPPLIER, :new.PUR_BASEPRICE, :new.PUR_CURRENCY,
 			:new.PUR_PURCHASEDATE, :new.SAL_RENTALPRICEMONTH, :new.SAL_RENTALPRICEWEEK,
 			:new.SAL_RENTALPRICEDAY, :new.SAL_CURRENCY, :new.ID_DEPOT, :new.DEP_LOCATION,
@@ -218,18 +227,17 @@ IF DELETING THEN
 		IF depot_state = 'Germany' THEN
 			DELETE FROM BNN_ARTICLE@bonn WHERE ID_ARTICLE = :old.ID_ARTICLE;
 		elsif depot_state = 'United Kingdom' THEN
-			DELETE FROM LDN_ARTICLE@london WHERE ID_ARTICLE = :old.ID_ARTICLE;
+			DELETE FROM LDN_ARTICLE WHERE ID_ARTICLE = :old.ID_ARTICLE;
 		elsif depot_state = 'USA' THEN
-			DELETE FROM NYK_ARTICLE WHERE ID_ARTICLE = :old.ID_ARTICLE;
+			DELETE FROM NYK_ARTICLE@newyork WHERE ID_ARTICLE = :old.ID_ARTICLE;
 		ELSE
 			RAISE_APPLICATION_ERROR(-21006, 'Invalid depot state.');
 		END IF;
 	END IF;
 END IF;
 END;
-/
-
-CREATE OR REPLACE TRIGGER RENT_GLO_TRI
+TRIGGER ARTICLE_GLO_TRI kompiliert
+> CREATE OR REPLACE TRIGGER RENT_GLO_TRI
 INSTEAD OF INSERT OR DELETE ON rent
 FOR EACH ROW
 DECLARE
@@ -252,10 +260,10 @@ IF INSERTING THEN
 			INSERT INTO BNN_RENT@bonn (ID_CUSTOMER, ID_ARTICLE, CONTRACT, RENTFROM, RENTTO, RETURNFLAG)
 			values (:new.ID_CUSTOMER, :new.ID_ARTICLE, :new.CONTRACT, :new.RENTFROM, :new.RENTTO, :new.RETURNFLAG);
 		ELSIF cust_state = 'United Kingdom' THEN
-			INSERT INTO LDN_RENT@london (ID_CUSTOMER, ID_ARTICLE, CONTRACT, RENTFROM, RENTTO, RETURNFLAG)
+			INSERT INTO LDN_RENT (ID_CUSTOMER, ID_ARTICLE, CONTRACT, RENTFROM, RENTTO, RETURNFLAG)
 			values (:new.ID_CUSTOMER, :new.ID_ARTICLE, :new.CONTRACT, :new.RENTFROM, :new.RENTTO, :new.RETURNFLAG);
 		ELSIF cust_state = 'United States' OR cust_state = 'Canada' THEN
-			INSERT INTO NYK_RENT (ID_CUSTOMER, ID_ARTICLE, CONTRACT, RENTFROM, RENTTO, RETURNFLAG)
+			INSERT INTO NYK_RENT@newyork (ID_CUSTOMER, ID_ARTICLE, CONTRACT, RENTFROM, RENTTO, RETURNFLAG)
 			values (:new.ID_CUSTOMER, :new.ID_ARTICLE, :new.CONTRACT, :new.RENTFROM, :new.RENTTO, :new.RETURNFLAG);
 		ELSE
 			RAISE_APPLICATION_ERROR(-21008, 'Invalid customer state or no customer.');
@@ -270,23 +278,25 @@ IF DELETING THEN
 	IF cust_state = 'Germany' OR cust_state = 'Nethderlands' THEN
 		DELETE FROM BNN_RENT@bonn WHERE ID_ARTICLE = :old.ID_ARTICLE AND ID_CUSTOMER = :old.ID_CUSTOMER AND CONTRACT = :old.CONTRACT;
 	ELSIF cust_state = 'United Kingdom' THEN
-		DELETE FROM LDN_RENT@london WHERE ID_ARTICLE = :old.ID_ARTICLE AND ID_CUSTOMER = :old.ID_CUSTOMER AND CONTRACT = :old.CONTRACT;
+		DELETE FROM LDN_RENT WHERE ID_ARTICLE = :old.ID_ARTICLE AND ID_CUSTOMER = :old.ID_CUSTOMER AND CONTRACT = :old.CONTRACT;
 	ELSIF cust_state = 'United States' OR cust_state = 'Canada' THEN
-		DELETE FROM NYK_RENT WHERE ID_ARTICLE = :old.ID_ARTICLE AND ID_CUSTOMER = :old.ID_CUSTOMER AND CONTRACT = :old.CONTRACT;
+		DELETE FROM NYK_RENT@newyork WHERE ID_ARTICLE = :old.ID_ARTICLE AND ID_CUSTOMER = :old.ID_CUSTOMER AND CONTRACT = :old.CONTRACT;
 	ELSE
 		RAISE_APPLICATION_ERROR(-21009, 'Invalid customer state.');
 	END IF;
 END IF;
 END;
-/
-
-
---
--- Systemdatum Ende
---
-  SELECT user,
+TRIGGER RENT_GLO_TRI kompiliert
+> --
+> -- Systemdatum Ende
+> --
+> SELECT user,
          TO_CHAR(SYSDATE, 'dd-mm-yy hh24:mi:ss') 
   FROM   dual
-  ;  
---
-spool off
+  
+USER                           TO_CHAR(SYSDATE,'DD-MM-YYHH24:MI:SS')
+------------------------------ -------------------------------------
+PROBIN2S                       31-05-15 12:18:02                    
+
+> --
+> spool off

@@ -131,7 +131,7 @@ IF INSERTING THEN
 		INSERT INTO NYK_CUSTOMER@newyork values (NULL,
 		:new.COMPANY, :new.ADDRESS, :new.ZIP, :new.CITY, :new.STATE);
 	ELSE
-		RAISE_APPLICATION_ERROR(-21000, "Invalid state.");
+		RAISE_APPLICATION_ERROR(-21000, 'Invalid state.');
 	END IF;
 END IF;
 IF DELETING THEN
@@ -140,7 +140,7 @@ IF DELETING THEN
 	FROM rent
 	WHERE rent.ID_CUSTOMER = :old.ID_CUSTOMER;
 	IF rent_id != NULL THEN
-		RAISE_APPLICATION_ERROR(-21001, "Could not delete customer, because there are still rents referencing it.");
+		RAISE_APPLICATION_ERROR(-21001, 'Could not delete customer, because there are still rents referencing it.');
 	ELSE
 		IF :old.state = 'Germany' OR :old.state = 'Netherlands' THEN
 			DELETE FROM BNN_CUSTOMER@bonn WHERE ID_CUSTOMER =
@@ -152,7 +152,7 @@ IF DELETING THEN
 			DELETE FROM NYK_CUSTOMER@newyork WHERE ID_CUSTOMER =
 			:old.ID_CUSTOMER;
 		ELSE
-			RAISE_APPLICATION_ERROR(-21002, "Invalid state.");
+			RAISE_APPLICATION_ERROR(-21002, 'Invalid state.');
 		END IF;
 	END IF;
 END IF;
@@ -178,7 +178,7 @@ IF INSERTING THEN
 	WHERE supplier.ID_SUPPLIER = :new.ID_SUPPLIER;
 	dbms_output.Put_line(depot_state);
 	IF sup_id = NULL THEN
-		RAISE_APPLICATION_ERROR(-21003, "No supplier.");
+		RAISE_APPLICATION_ERROR(-21003, 'No supplier.');
 	ELSE
 		IF depot_state = 'Germany' THEN
 			INSERT INTO BNN_ARTICLE@bonn values (NULL,
@@ -199,7 +199,7 @@ IF INSERTING THEN
 			:new.SAL_RENTALPRICEDAY, :new.SAL_CURRENCY, :new.ID_DEPOT, :new.DEP_LOCATION,
 			:new.DEP_WEIGHTKG, :new.DEP_HEIGHTCM, :new.DEP_LENGTHCM, :new.DEP_BREADTHCM);
 		ELSE
-			RAISE_APPLICATION_ERROR(-21004, "Invalid depot state or no depot.");
+			RAISE_APPLICATION_ERROR(-21004, 'Invalid depot state or no depot.');
 		END IF;
 	END IF;
 END IF;
@@ -213,7 +213,7 @@ IF DELETING THEN
 	FROM RENT
 	WHERE RENT.ID_ARTICLE = :old.ID_ARTICLE;
 	IF rent_id != NULL THEN
-		RAISE_APPLICATION_ERROR(-21005, "Could not delete article, because there are still rents referencing it.");
+		RAISE_APPLICATION_ERROR(-21005, 'Could not delete article, because there are still rents referencing it.');
 	ELSE
 		IF depot_state = 'Germany' THEN
 			DELETE FROM BNN_ARTICLE@bonn WHERE ID_ARTICLE = :old.ID_ARTICLE;
@@ -222,7 +222,7 @@ IF DELETING THEN
 		elsif depot_state = 'USA' THEN
 			DELETE FROM NYK_ARTICLE@newyork WHERE ID_ARTICLE = :old.ID_ARTICLE;
 		ELSE
-			RAISE_APPLICATION_ERROR(-21006, "Invalid depot state.");
+			RAISE_APPLICATION_ERROR(-21006, 'Invalid depot state.');
 		END IF;
 	END IF;
 END IF;
@@ -246,7 +246,7 @@ IF INSERTING THEN
 	FROM article
 	where article.ID_ARTICLE = :new.ID_ARTICLE;
 	IF article_id = NULL THEN
-		RAISE_APPLICATION_ERROR(-21007, "No article.");
+		RAISE_APPLICATION_ERROR(-21007, 'No article.');
 	ELSE
 		IF cust_state = 'Germany' OR cust_state = 'Nethderlands' THEN
 			INSERT INTO BNN_RENT@bonn (ID_CUSTOMER, ID_ARTICLE, CONTRACT, RENTFROM, RENTTO, RETURNFLAG)
@@ -258,7 +258,7 @@ IF INSERTING THEN
 			INSERT INTO NYK_RENT@newyork (ID_CUSTOMER, ID_ARTICLE, CONTRACT, RENTFROM, RENTTO, RETURNFLAG)
 			values (:new.ID_CUSTOMER, :new.ID_ARTICLE, :new.CONTRACT, :new.RENTFROM, :new.RENTTO, :new.RETURNFLAG);
 		ELSE
-			RAISE_APPLICATION_ERROR(-21008, "Invalid customer state or no customer.");
+			RAISE_APPLICATION_ERROR(-21008, 'Invalid customer state or no customer.');
 		END IF;
 	END IF;
 END IF;
@@ -274,7 +274,7 @@ IF DELETING THEN
 	ELSIF cust_state = 'United States' OR cust_state = 'Canada' THEN
 		DELETE FROM NYK_RENT@newyork WHERE ID_ARTICLE = :old.ID_ARTICLE AND ID_CUSTOMER = :old.ID_CUSTOMER AND CONTRACT = :old.CONTRACT;
 	ELSE
-		RAISE_APPLICATION_ERROR(-21009, "Invalid customer state.");
+		RAISE_APPLICATION_ERROR(-21009, 'Invalid customer state.');
 	END IF;
 END IF;
 END;
