@@ -27,37 +27,46 @@ spool   ./test_global_pk_database.log
          TO_CHAR(SYSDATE, 'dd-mm-yy hh24:mi:ss') 
   FROM   dual
   ;  
---
--- ***************************************************************
--- * Globales Testskript  
---
 
---
--- ***************************************************************
--- * Globale Einfuegevorgaenge (pro lakaler Tabelle)  
---
+--	Testcases
+--	Insert customer
+--	* correct
+insert into customer values ( null , 'Test' , 'Tettaustraße 1' , '53111' , 'Bonn' , 'Germany' );
+--	Insert article
+--	* correct
+insert into ARTICLE values ( null , 'Test', 'Test' , 1 , 20000.00, 'Euro', to_date('2010-10-23', 'yyyy-mm-dd'), 1004.00, 251.00, 104.00, 'Dollar', 1, 1337, 2721.00, 120.00, 150.00, 200.00);
+--	* without correct supplier
+insert into ARTICLE values ( null , 'Test', 'Test' , 23 , 20000.00, 'Euro', to_date('2010-10-23', 'yyyy-mm-dd'), 1004.00, 251.00, 104.00, 'Dollar', 2, 1337, 2721.00, 120.00, 150.00, 200.00);
+--	* without correct depot
+insert into ARTICLE values ( null , 'Test', 'Test' , 1 , 20000.00, 'Euro', to_date('2010-10-23', 'yyyy-mm-dd'), 1004.00, 251.00, 104.00, 'Dollar', 5, 1337, 2721.00, 120.00, 150.00, 200.00);
+--	Insert rent
+--	* correct
+insert into rent values (11, 17, 3, to_date('2017-01-01','yyyy-mm-dd'), to_date('2018-01-01','yyyy-mm-dd'), 0);
+--	* without customer
+insert into rent values (42, 17, 3, to_date('2017-01-01','yyyy-mm-dd'), to_date('2018-01-01','yyyy-mm-dd'), 0);
+--	* without article
+insert into rent values (11, 42, 3, to_date('2017-01-01','yyyy-mm-dd'), to_date('2018-01-01','yyyy-mm-dd'), 0);
+--	Delete customer
+--	* correct
+delete from customer where id_customer = 2001;
+--	* with existing rent
+insert into customer values ( null , 'Test' , 'Tettaustraße 1' , '53111' , 'Bonn' , 'Germany' );
+insert into rent values (2011, 17, 1, to_date('2017-01-01','yyyy-mm-dd'), to_date('2018-01-01','yyyy-mm-dd'), 0);
+delete from customer where id_customer = 2011;
+--	Delete article
+--	* correct
+delete from article where id_article = 2001;
+--	* with existing rent
+insert into ARTICLE values ( null , 'Test', 'Test' , 1 , 20000.00, 'Euro', to_date('2010-10-23', 'yyyy-mm-dd'), 1004.00, 251.00, 104.00, 'Dollar', 1, 1337, 2721.00, 120.00, 150.00, 200.00);
+insert into rent values (11, 2011, 1, to_date('2017-01-01','yyyy-mm-dd'), to_date('2018-01-01','yyyy-mm-dd'), 0);
+delete from article where id_article = 2011;
+--	Delete rent
+--	* correct
+delete from rent where id_customer = 11 and id_article = 17 and contract = 3
 
-Insert into ARTICLE values ( null , 'Test', 'Test' , 1 , 20000.00, 'Euro', to_date('2010-10-23', 'yyyy-mm-dd'), 1004.00, 251.00, 104.00, 'Dollar', 1, 1337, 2721.00, 120.00, 150.00, 200.00);
-Insert into ARTICLE values ( null , 'Test', 'Test' , 2 , 20000.00, 'Euro', to_date('2010-10-23', 'yyyy-mm-dd'), 1004.00, 251.00, 104.00, 'Dollar', 1, 1342, 2721.00, 120.00, 150.00, 200.00);
-Insert into ARTICLE values ( null , 'Test', 'Test' , 1 , 20000.00, 'Euro', to_date('2010-10-23', 'yyyy-mm-dd'), 1004.00, 251.00, 104.00, 'Dollar', 2, 1337, 2721.00, 120.00, 150.00, 200.00);
-Insert into ARTICLE values ( null , 'Test', 'Test' , 2 , 20000.00, 'Euro', to_date('2010-10-23', 'yyyy-mm-dd'), 1004.00, 251.00, 104.00, 'Dollar', 2, 1342, 2721.00, 120.00, 150.00, 200.00);
-Insert into ARTICLE values ( null , 'Test', 'Test' , 1 , 20000.00, 'Euro', to_date('2010-10-23', 'yyyy-mm-dd'), 1004.00, 251.00, 104.00, 'Dollar', 3, 1337, 2721.00, 120.00, 150.00, 200.00);
-Insert into ARTICLE values ( null , 'Test', 'Test' , 2 , 20000.00, 'Euro', to_date('2010-10-23', 'yyyy-mm-dd'), 1004.00, 251.00, 104.00, 'Dollar', 3, 1342, 2721.00, 120.00, 150.00, 200.00);
 
-
-Insert into customer values ( null , 'Test' , 'Tettaustraße 1' , '53111' , 'Bonn' , 'Germany' );
-Insert into customer values ( null , 'Test' , 'Tettaustraße 1' , '53111' , 'Bonn' , 'Germany' );
-Insert into customer values ( null , 'Test' , '402 Testing Stree' , 'N12 8LY' , 'London' , 'United Kingdom' );
-Insert into customer values ( null , 'Test' , '402 Testing Stree' , 'N12 8LY' , 'London' , 'United Kingdom' );
-Insert into customer values ( null , 'Test' , '402 Testing Avenue' , 'NY 221012' , 'New York' , 'United States' );
-
---
--- ***************************************************************
--- * Globale Loeschvorgaenge (idealerweise die oben eingef�gten 
--- * Datensaetze)
---
-
--- delete r from rent as r natural join customer c where c.company = 'Test';
+-- Aufräumen
+delete from rent where rentto = to_date('2018-01-01', 'yyyy-mm-dd');
 delete from customer where company = 'Test';
 delete from article where item = 'Test';
 
