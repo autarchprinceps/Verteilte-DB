@@ -119,7 +119,7 @@ CREATE OR REPLACE TRIGGER CUSTOMER_GLO_TRI
 INSTEAD OF INSERT OR DELETE ON customer
 FOR EACH ROW
 DECLARE
-	rent_id rent.ID_CUSTOMER%TYPE;
+	rent_id int;
 BEGIN
 IF INSERTING THEN
 	IF :new.state = 'Germany' OR :new.state = 'Netherlands' THEN
@@ -136,11 +136,11 @@ IF INSERTING THEN
 	END IF;
 END IF;
 IF DELETING THEN
-	SELECT ID_CUSTOMER
+	SELECT count(ID_CUSTOMER)
 	INTO rent_id
 	FROM rent
 	WHERE rent.ID_CUSTOMER = :old.ID_CUSTOMER;
-	IF rent_id != NULL THEN
+	IF rent_id > 0 THEN
 		RAISE_APPLICATION_ERROR(-21001, 'Delete failed');
 	ELSE
 		IF :old.state = 'Germany' OR :old.state = 'Netherlands' THEN
@@ -165,20 +165,20 @@ INSTEAD OF INSERT OR DELETE ON article
 FOR EACH ROW
 DECLARE
 	depot_state depot.STATE%TYPE;
-	sup_id supplier.ID_SUPPLIER%TYPE;
-	rent_id rent.ID_ARTICLE%TYPE;
+	sup_id int;
+	rent_id int;
 BEGIN
 IF INSERTING THEN
 	SELECT state
 	INTO depot_state
 	FROM depot
 	WHERE depot.ID_DEPOT = :new.ID_DEPOT;
-	SELECT ID_SUPPLIER
+	SELECT count(ID_SUPPLIER)
 	INTO sup_id
 	FROM supplier
 	WHERE supplier.ID_SUPPLIER = :new.ID_SUPPLIER;
 	dbms_output.Put_line(depot_state);
-	IF sup_id = NULL THEN
+	IF sup_id = 0 THEN
 		RAISE_APPLICATION_ERROR(-21003, 'No supplier');
 	ELSE
 		IF depot_state = 'Germany' THEN
@@ -209,11 +209,11 @@ IF DELETING THEN
 	INTO depot_state
 	FROM depot
 	WHERE depot.ID_DEPOT = :old.ID_DEPOT;
-	SELECT ID_ARTICLE
+	SELECT count(ID_ARTICLE)
 	INTO rent_id
 	FROM RENT
 	WHERE RENT.ID_ARTICLE = :old.ID_ARTICLE;
-	IF rent_id != NULL THEN
+	IF rent_id > 0 THEN
 		RAISE_APPLICATION_ERROR(-21005, 'Delete failed');
 	ELSE
 		IF depot_state = 'Germany' THEN
@@ -235,18 +235,18 @@ INSTEAD OF INSERT OR DELETE ON rent
 FOR EACH ROW
 DECLARE
 	cust_state customer.STATE%TYPE;
-	article_id article.ID_ARTICLE%TYPE;
+	article_id int;
 BEGIN
 IF INSERTING THEN
 	SELECT state
 	INTO cust_state
 	FROM customer
 	WHERE customer.ID_CUSTOMER = :new.ID_CUSTOMER;
-	SELECT ID_ARTICLE
+	SELECT count(ID_ARTICLE)
 	INTO article_id
 	FROM article
 	where article.ID_ARTICLE = :new.ID_ARTICLE;
-	IF article_id = NULL THEN
+	IF article_id = 0 THEN
 		RAISE_APPLICATION_ERROR(-21007, 'No article');
 	ELSE
 		IF cust_state = 'Germany' OR cust_state = 'Nethderlands' THEN
