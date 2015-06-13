@@ -85,4 +85,6 @@ delete:
 			else
 				weiterleitung globaler trigger
 	
-	
+TODO:
+* Verhindern oder weiterleiten von Änderungen vom Slave
+	- Trennung von Daten Bonn (Master) und Daten Bonn (Slave, da Replika)?
