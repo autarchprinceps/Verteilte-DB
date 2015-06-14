@@ -32,6 +32,14 @@ spool   ./test_replication_database.log
 -- * Globales Testskript  
 --
 
+insert into depot values(null, 'test', 'test 1', '12345', 'test', 'Germany');
+select * from depot natural join depot@london;
+
+insert into supplier values(null, 'test', 'test 1', '12345', 'test', 'Germany');
+select * from supplier natural join supplier@london;
+
+insert into ldn_customer@london values(null, 'test', 'test 1', '12345', 'test', 'United Kingdom');
+select * from ldn_customer@london natural join bnn_customer;
 
 
 --
