@@ -59,8 +59,10 @@ create table supplier (
 -- * Die Aenderungen fuer den Standort London  
 --
 
+-- TODO update, delete?
+
 create or replace trigger ldn_depot_tri
-instead of insert ON DEPOT -- TODO update, delete?
+instead of insert ON DEPOT 
 for all rows
 when (new.id_depot is null)
 begin
@@ -71,8 +73,10 @@ NULL;
 END;
 /
 
+-- TODO update, delete?
+
 create or replace trigger ldn_supplier_tri
-instead of insert ON SUPPLIER -- TODO update, delete?
+instead of insert ON SUPPLIER 
 for all rows
 when (new.id_supplier is null)
 begin
@@ -131,7 +135,7 @@ BEGIN
 		SELECT ldn_RENT_SEQ.NEXTVAL
 		INTO :NEW.CONTRACT
 		FROM dual;
-		INSERT INTO BNN_RENT@BONN VALUES(:NEW.ID_CUSTOMER; :NEW.ID_ARTICLE, :NEW.CONTRACT, :NEW.RENTFROM, :NEW.RENTTO, :NEW.RETURNFLAG);
+		INSERT INTO BNN_RENT@BONN VALUES(:NEW.ID_CUSTOMER, :NEW.ID_ARTICLE, :NEW.CONTRACT, :NEW.RENTFROM, :NEW.RENTTO, :NEW.RETURNFLAG);
 	ELSIF DELETING THEN
 		DELETE FROM BNN_RENT@BONN WHERE :NEW.ID_CUSTOMER = ID_CUSTOMER AND :NEW.ID_ARTICLE = ID_ARTICLE AND :NEW.CONTRACT = CONTRACT;
 	ELSIF updating THEN
@@ -157,7 +161,7 @@ BEGIN
 		SELECT ldn_CUSTOMER_SEQ.NEXTVAL
 		INTO :NEW.ID_CUSTOMER
 		FROM dual;
-		insert into bnn_customer@bonn values(:new.ID_CUSTOMER, :new.COMPANY, :new.ADDRESS; :NEW.ZIP, :NEW.CITY, :NEW.STATE);
+		insert into bnn_customer@bonn values(:new.ID_CUSTOMER, :new.COMPANY, :new.ADDRESS, :NEW.ZIP, :NEW.CITY, :NEW.STATE);
 	ELSIF DELETING THEN
 		DELETE FROM BNN_CUSTOMER@BONN WHERE :OLD.ID_CUSTOMER = ID_CUSTOMER;
 	ELSIF updating THEN
