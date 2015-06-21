@@ -59,10 +59,8 @@ create table supplier (
 -- * Die Aenderungen fuer den Standort London  
 --
 
--- TODO update, delete?
-
 create or replace trigger ldn_depot_tri
-instead of insert ON DEPOT 
+instead of insert ON DEPOT
 for all rows
 when (new.id_depot is null)
 begin
@@ -73,10 +71,8 @@ NULL;
 END;
 /
 
--- TODO update, delete?
-
 create or replace trigger ldn_supplier_tri
-instead of insert ON SUPPLIER 
+instead of insert ON SUPPLIER
 for all rows
 when (new.id_supplier is null)
 begin

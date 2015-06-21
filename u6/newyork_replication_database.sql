@@ -61,7 +61,7 @@ create table supplier (
 --
 
 create or replace trigger nyk_depot_tri
-instead of insert ON DEPOT -- TODO update, delete?
+instead of insert ON DEPOT
 for all rows
 when (new.id_depot is null)
 begin
@@ -73,7 +73,7 @@ END;
 /
 
 create or replace trigger nyk_supplier_tri
-instead of insert ON SUPPLIER -- TODO update, delete?
+instead of insert ON SUPPLIER
 for all rows
 when (new.id_supplier is null)
 begin
